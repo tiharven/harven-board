@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel Agro - Harven</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
-        /* Cores Oficiais da Harven */
+
         :root {
             --bg-dark-green: #1c2d1b;
             --black: #000000;
@@ -19,22 +21,28 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark-green);
             color: var(--off-white);
-            overflow: hidden; 
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
 
-        /* CABEÇALHO */
+        /* HEADER */
+
         .header {
             background-color: var(--black);
             height: 110px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             padding: 0 50px;
+
             border-bottom: 4px solid var(--neon);
+
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+
             z-index: 10;
         }
 
@@ -43,297 +51,587 @@
             object-fit: contain;
         }
 
-        .title-container { text-align: center; }
-        .title { font-size: 28px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
-        .title span { color: var(--neon); }
+        .title-container {
+            text-align: center;
+        }
 
-        .clock-container { text-align: right; }
-        .clock { font-size: 42px; font-weight: 800; color: var(--gold); line-height: 1; }
-        .date { font-size: 16px; color: var(--off-white); opacity: 0.8; text-transform: capitalize; }
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0;
+        }
 
-        /* CONTEÚDO CENTRAL */
+        .title span {
+            color: var(--neon);
+        }
+
+        .clock-container {
+            text-align: right;
+        }
+
+        .clock {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .date {
+            font-size: 16px;
+            color: var(--off-white);
+            opacity: 0.8;
+            text-transform: capitalize;
+        }
+
+        #ultima-atualizacao {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 6px;
+        }
+
+        /* CONTENT */
+
         .content {
             flex: 1;
+
             padding: 40px 50px;
+
             display: grid;
+
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
+
             gap: 30px;
         }
 
         .card {
             background-color: var(--black);
+
             border-radius: 16px;
+
             padding: 30px;
+
             display: flex;
             flex-direction: column;
             justify-content: center;
+
             position: relative;
+
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 8px; height: 100%;
-            border-top-left-radius: 16px; border-bottom-left-radius: 16px;
+            content: '';
+
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 8px;
+            height: 100%;
+
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
         }
 
-        .card.neon::before { background-color: var(--neon); }
-        .card.gold::before { background-color: var(--gold); }
+        .card.neon::before {
+            background-color: var(--neon);
+        }
 
-        .card-title { font-size: 20px; font-weight: 600; color: var(--off-white); margin-bottom: 10px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
-        .card-value { font-size: 52px; font-weight: 800; }
-        
-        .card.neon .card-value { color: var(--neon); }
-        .card.gold .card-value { color: var(--gold); }
+        .card.gold::before {
+            background-color: var(--gold);
+        }
 
-        /* WIDGET DE CLIMA */
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--off-white);
+            margin-bottom: 10px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 52px;
+            font-weight: 800;
+        }
+
+        .card.neon .card-value {
+            color: var(--neon);
+        }
+
+        .card.gold .card-value {
+            color: var(--gold);
+        }
+
+        /* WEATHER */
+
         .weather-card {
             grid-column: span 2;
-            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(28,45,27,0.8) 100%);
+
+            background: linear-gradient(
+                135deg,
+                rgba(0,0,0,0.8) 0%,
+                rgba(28,45,27,0.8) 100%
+            );
+
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
+
             border: 1px solid var(--neon);
         }
 
-        .weather-info { text-align: center; }
-        .weather-city { font-size: 22px; color: var(--gold); font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
-        .weather-temp { font-size: 68px; font-weight: 800; color: var(--off-white); }
+        .weather-info {
+            text-align: center;
+        }
 
-        /* LETREIRO DE NOTÍCIAS */
+        .weather-city {
+            font-size: 22px;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .weather-temp {
+            font-size: 68px;
+            font-weight: 800;
+            color: var(--off-white);
+        }
+
+        /* TICKER */
+
         .ticker-wrap {
             height: 70px;
+
             background-color: var(--black);
+
             display: flex;
             align-items: center;
+
             overflow: hidden;
             white-space: nowrap;
+
             position: relative;
         }
 
         .ticker-badge {
-            background-color: var(--neon); color: var(--black); font-weight: 800; padding: 0 30px;
-            height: 100%; display: flex; align-items: center; font-size: 20px; z-index: 10;
-            text-transform: uppercase; box-shadow: 10px 0 20px rgba(0,0,0,0.8); position: absolute; left: 0;
+            background-color: var(--neon);
+            color: var(--black);
+
+            font-weight: 800;
+
+            padding: 0 30px;
+
+            height: 100%;
+
+            display: flex;
+            align-items: center;
+
+            font-size: 20px;
+
+            z-index: 10;
+
+            text-transform: uppercase;
+
+            box-shadow: 10px 0 20px rgba(0,0,0,0.8);
+
+            position: absolute;
+            left: 0;
         }
 
         .ticker {
-            padding-left: 300px; display: inline-block; animation: ticker 45s linear infinite;
-            font-size: 24px; color: var(--off-white);
-        }
-        .ticker span { color: var(--gold); margin: 0 20px; font-weight: bold; }
+            padding-left: 300px;
 
-        @keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+            display: inline-block;
+
+            animation: ticker 45s linear infinite;
+
+            font-size: 24px;
+
+            color: var(--off-white);
+        }
+
+        .ticker span {
+            color: var(--gold);
+            margin: 0 20px;
+            font-weight: bold;
+        }
+
+        @keyframes ticker {
+
+            0% {
+                transform: translateX(100vw);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
     </style>
 </head>
+
 <body>
 
     <div class="header">
-        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo">
-        <div class="title-container">
-            <h1 class="title">HARVEN<span>BOARD</span></h1>
-        </div>
-        <div class="clock-container">
-    <div class="clock" id="relogio">00:00</div>
-    <div class="date" id="data">Carregando data...</div>
 
-    <div id="ultima-atualizacao"
-         style="
-            font-size:12px;
-            opacity:0.6;
-            margin-top:6px;
-         ">
-        Atualizando...
-    </div>
-</div>
+        <img
+            src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png"
+            alt="Harven Logo"
+            class="logo"
+        >
+
+        <div class="title-container">
+            <h1 class="title">
+                HARVEN<span>BOARD</span>
+            </h1>
+        </div>
+
+        <div class="clock-container">
+
+            <div class="clock" id="relogio">
+                00:00
+            </div>
+
+            <div class="date" id="data">
+                Carregando data...
+            </div>
+
+            <div id="ultima-atualizacao">
+                Atualizando...
+            </div>
+
+        </div>
+
     </div>
 
     <div class="content">
+
         <div class="card neon">
             <div class="card-title">Dólar (USD)</div>
             <div class="card-value" id="dolar">R$ --</div>
         </div>
+
         <div class="card neon">
             <div class="card-title">Euro (EUR)</div>
             <div class="card-value" id="euro">R$ --</div>
         </div>
+
         <div class="card gold">
-            <div class="card-title">Soja (Saca)</div>
+            <div class="card-title">Soja</div>
             <div class="card-value" id="soja">R$ --</div>
         </div>
+
         <div class="card gold">
-            <div class="card-title">Milho (Saca)</div>
+            <div class="card-title">Milho</div>
             <div class="card-value" id="milho">R$ --</div>
         </div>
+
         <div class="card gold">
-            <div class="card-title">Café (Saca)</div>
+            <div class="card-title">Café</div>
             <div class="card-value" id="cafe">R$ --</div>
         </div>
+
         <div class="card gold">
-            <div class="card-title">Boi Gordo (@)</div>
+            <div class="card-title">Boi Gordo</div>
             <div class="card-value" id="boi">R$ --</div>
         </div>
+
         <div class="card weather-card">
+
             <div class="weather-info">
-                <div class="weather-city">Ribeirão Preto / SP</div>
-                <div class="weather-temp" id="temp">--°C</div>
+                <div class="weather-city">
+                    Ribeirão Preto / SP
+                </div>
+
+                <div class="weather-temp" id="temp">
+                    --°C
+                </div>
             </div>
-            <div style="font-size: 80px;">🌤️</div>
+
+            <div style="font-size:80px;">
+                🌤️
+            </div>
+
         </div>
+
     </div>
 
     <div class="ticker-wrap">
-        <div class="ticker-badge">Giro do Agro</div>
-        <div class="ticker" id="ticker-noticias">
-            Buscando últimas notícias do mercado...
+
+        <div class="ticker-badge">
+            Giro do Agro
         </div>
+
+        <div class="ticker" id="ticker-noticias">
+            Buscando últimas notícias...
+        </div>
+
     </div>
 
     <script>
+
+        /* RELÓGIO */
+
         function atualizarRelogio() {
+
             const agora = new Date();
-            document.getElementById('relogio').innerText = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
-            document.getElementById('data').innerText = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+            document.getElementById('relogio').innerText =
+                String(agora.getHours()).padStart(2, '0')
+                + ':'
+                + String(agora.getMinutes()).padStart(2, '0');
+
+            document.getElementById('data').innerText =
+                agora.toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                });
         }
+
         setInterval(atualizarRelogio, 1000);
+
         atualizarRelogio();
 
+        /* MOEDAS */
+
         async function atualizarMoedas() {
+
             try {
-                const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL');
+
+                const res = await fetch(
+                    'https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL'
+                );
+
                 const dados = await res.json();
-                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-                document.getElementById('dolar').innerText = formatador.format(parseFloat(dados.USDBRL.bid));
-                document.getElementById('euro').innerText = formatador.format(parseFloat(dados.EURBRL.bid));
-            } catch(e) {}
-        }
 
-        async function atualizarClima() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true');
-                const dados = await res.json();
-                document.getElementById('temp').innerText = Math.round(dados.current_weather.temperature) + '°C';
-            } catch(e) {}
-        }
-
-        async function atualizarNoticias() {
-            try {
-                const urlRSS = 'https://www.canalrural.com.br/feed/';
-                const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlRSS)}`;
-                const res = await fetch(api);
-                const dados = await res.json();
-                if (dados.status === 'ok') {
-                    let textoFinal = '';
-                    dados.items.slice(0, 6).forEach(noticia => {
-                        textoFinal += `${noticia.title.toUpperCase()} <span> | </span> `;
-                    });
-                    document.getElementById('ticker-noticias').innerHTML = textoFinal;
-                }
-            } catch(e) {}
-        }
-
-        // LEITOR DE PLANILHA À PROVA DE BALAS
-        async function atualizarPlanilhaAgro() {
-
-try {
-
-    const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t=' + new Date().getTime();
-
-    const res = await fetch(urlCSV);
-    const textoCSV = await res.text();
-
-    const linhas = textoCSV.split(/\r?\n/);
-
-    linhas.forEach((linha, index) => {
-
-        if(index === 0) return;
-
-        const delimitador = linha.includes(';') ? ';' : ',';
-        const colunas = linha.split(delimitador);
-
-        if(colunas.length >= 4) {
-
-            const nome = colunas[0].trim().toLowerCase();
-            const contrato = colunas[1].trim();
-
-            let valor = colunas[2]
-                .replace(/"/g, '')
-                .replace(',', '.')
-                .trim();
-
-            let variacao = colunas[3]
-                .replace(/"/g, '')
-                .replace('%', '')
-                .replace(',', '.')
-                .trim();
-
-            valor = parseFloat(valor);
-            variacao = parseFloat(variacao);
-
-            if(!isNaN(valor)) {
-
-                const card = document.getElementById(nome);
-
-                if(card) {
-
-                    const valorFormatado = valor.toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
+                const formatador =
+                    new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
                     });
 
-                    let seta = '•';
+                document.getElementById('dolar').innerText =
+                    formatador.format(parseFloat(dados.USDBRL.bid));
 
-                    if(variacao > 0) seta = '▲';
-                    if(variacao < 0) seta = '▼';
+                document.getElementById('euro').innerText =
+                    formatador.format(parseFloat(dados.EURBRL.bid));
 
-                    let cor = '#f5f5f0';
+            } catch(e) {
 
-                    if(variacao > 0) cor = '#00ff88';
-                    if(variacao < 0) cor = '#ff5c5c';
+                console.error(e);
 
-                    card.innerHTML = `
-                        <div style="font-size:18px;opacity:0.7;margin-bottom:8px;">
-                            ${contrato}
-                        </div>
-
-                        <div>
-                            R$ ${valorFormatado}
-                        </div>
-
-                        <div style="
-                            font-size:20px;
-                            margin-top:10px;
-                            color:${cor};
-                            font-weight:700;
-                        ">
-                            ${seta} ${variacao.toFixed(2)}%
-                        </div>
-                    `;
-                }
             }
         }
-    });
 
-} catch(erro) {
+        /* CLIMA */
 
-document.getElementById('ultima-atualizacao').innerText =
-'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+        async function atualizarClima() {
 
-    console.error("Erro na planilha:", erro);
+            try {
 
-}
+                const res = await fetch(
+                    'https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true'
+                );
+
+                const dados = await res.json();
+
+                document.getElementById('temp').innerText =
+                    Math.round(dados.current_weather.temperature) + '°C';
+
+            } catch(e) {
+
+                console.error(e);
+
+            }
         }
+
+        /* NOTÍCIAS */
+
+        async function atualizarNoticias() {
+
+            try {
+
+                const urlRSS =
+                    'https://www.canalrural.com.br/feed/';
+
+                const api =
+                    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlRSS)}`;
+
+                const res = await fetch(api);
+
+                const dados = await res.json();
+
+                if(dados.status === 'ok') {
+
+                    let textoFinal = '';
+
+                    dados.items.slice(0, 8).forEach(noticia => {
+
+                        textoFinal +=
+                            `${noticia.title.toUpperCase()} <span>|</span> `;
+                    });
+
+                    document.getElementById('ticker-noticias').innerHTML =
+                        textoFinal;
+                }
+
+            } catch(e) {
+
+                console.error(e);
+
+            }
+        }
+
+        /* COMMODITIES */
+
+        async function atualizarPlanilhaAgro() {
+
+            try {
+
+                const urlCSV =
+                    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t='
+                    + new Date().getTime();
+
+                const res = await fetch(urlCSV);
+
+                const textoCSV = await res.text();
+
+                const linhas = textoCSV.split(/\r?\n/);
+
+                linhas.forEach((linha, index) => {
+
+                    if(index === 0) return;
+
+                    const delimitador =
+                        linha.includes(';') ? ';' : ',';
+
+                    const colunas =
+                        linha.split(delimitador);
+
+                    if(colunas.length >= 4) {
+
+                        const nome =
+                            colunas[0]
+                            .trim()
+                            .toLowerCase();
+
+                        const contrato =
+                            colunas[1]
+                            .trim();
+
+                        let valor =
+                            colunas[2]
+                            .replace(/"/g, '')
+                            .replace(',', '.')
+                            .trim();
+
+                        let variacao =
+                            colunas[3]
+                            .replace(/"/g, '')
+                            .replace('%', '')
+                            .replace(',', '.')
+                            .trim();
+
+                        valor = parseFloat(valor);
+                        variacao = parseFloat(variacao);
+
+                        if(!isNaN(valor)) {
+
+                            const card =
+                                document.getElementById(nome);
+
+                            if(card) {
+
+                                const valorFormatado =
+                                    valor.toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }
+                                    );
+
+                                let seta = '•';
+
+                                if(variacao > 0) seta = '▲';
+                                if(variacao < 0) seta = '▼';
+
+                                let cor = '#f5f5f0';
+
+                                if(variacao > 0) cor = '#00ff88';
+                                if(variacao < 0) cor = '#ff5c5c';
+
+                                card.innerHTML = `
+
+                                    <div style="
+                                        font-size:18px;
+                                        opacity:0.7;
+                                        margin-bottom:8px;
+                                    ">
+                                        ${contrato}
+                                    </div>
+
+                                    <div>
+                                        R$ ${valorFormatado}
+                                    </div>
+
+                                    <div style="
+                                        font-size:20px;
+                                        margin-top:10px;
+                                        color:${cor};
+                                        font-weight:700;
+                                    ">
+                                        ${seta}
+                                        ${variacao.toFixed(2)}%
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('ultima-atualizacao').innerText =
+                    'Atualizado às '
+                    + new Date().toLocaleTimeString('pt-BR');
+
+            } catch(erro) {
+
+                console.error(
+                    "Erro na planilha:",
+                    erro
+                );
+
+            }
+        }
+
+        /* START */
 
         atualizarMoedas();
         atualizarClima();
         atualizarNoticias();
         atualizarPlanilhaAgro();
 
-        setInterval(atualizarMoedas, 300000); 
+        /* INTERVALOS */
+
+        setInterval(atualizarMoedas, 300000);
+
         setInterval(atualizarClima, 1800000);
-        setInterval(atualizarPlanilhaAgro, 60000);
+
+        setInterval(atualizarPlanilhaAgro, 600000);
+
         setInterval(atualizarNoticias, 1800000);
+
     </script>
+
 </body>
 </html>
