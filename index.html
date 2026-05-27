@@ -545,7 +545,7 @@
                         valor = parseFloat(valor);
                         variacao = parseFloat(variacao);
 
-                        if(!isNaN(valor)) {
+                        if(!isNaN(valor) && valor > 1) {
 
                             const card =
                                 document.getElementById(nome);
