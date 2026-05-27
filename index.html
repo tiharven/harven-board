@@ -135,9 +135,18 @@
             <h1 class="title">HARVEN<span>BOARD</span></h1>
         </div>
         <div class="clock-container">
-            <div class="clock" id="relogio">00:00</div>
-            <div class="date" id="data">Carregando data...</div>
-        </div>
+    <div class="clock" id="relogio">00:00</div>
+    <div class="date" id="data">Carregando data...</div>
+
+    <div id="ultima-atualizacao"
+         style="
+            font-size:12px;
+            opacity:0.6;
+            margin-top:6px;
+         ">
+        Atualizando...
+    </div>
+</div>
     </div>
 
     <div class="content">
@@ -307,7 +316,8 @@ try {
     });
 
 } catch(erro) {
-
+document.getElementById('ultima-atualizacao').innerText =
+'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
     console.error("Erro na planilha:", erro);
 
 }
@@ -320,7 +330,7 @@ try {
 
         setInterval(atualizarMoedas, 300000); 
         setInterval(atualizarClima, 1800000);
-        setInterval(atualizarPlanilhaAgro, 60000);
+        setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
     </script>
 </body>
