@@ -552,14 +552,22 @@
 
                             if(card) {
 
-                                const valorFormatado =
-                                    valor.toLocaleString(
-                                        'pt-BR',
-                                        {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }
-                                    );
+    // ignora valores inválidos
+    if(isNaN(valor) || valor <= 1) {
+        return;
+    }
+
+    // salva último valor válido
+    card.dataset.ultimoValor = valor;
+
+    const valorFormatado =
+        valor.toLocaleString(
+            'pt-BR',
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 
                                 let seta = '•';
 
