@@ -226,41 +226,91 @@
 
         // LEITOR DE PLANILHA À PROVA DE BALAS
         async function atualizarPlanilhaAgro() {
-            try {
-                // Adicionamos um "t=" no final da URL para burlar o cache do navegador e forçar dados novos
-                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?output=csv&t=' + new Date().getTime();
-                
-                const res = await fetch(urlCSV);
-                const textoCSV = await res.text();
 
-                // Divide as linhas (independente de ser Windows ou Mac)
-                const linhas = textoCSV.split(/\r?\n/);
-                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+try {
 
-                linhas.forEach(linha => {
-                    // Detecção automática: O Sheets exportou com vírgula ou ponto e vírgula?
-                    const delimitador = linha.includes(';') ? ';' : ',';
-                    const colunas = linha.split(delimitador);
-                    
-                    if(colunas.length >= 2) {
-                        const nome = colunas[0].trim().toLowerCase();
-                        
-                        // Limpa qualquer aspa perdida e garante que é ponto decimal
-                        let valorBruto = colunas[1].replace(/["']/g, "").trim().replace(',', '.');
-                        const valor = parseFloat(valorBruto);
-                        
-                        if(!isNaN(valor)) {
-                            const valorFormatado = formatador.format(valor);
-                            if(nome.includes('soja')) document.getElementById('soja').innerText = valorFormatado;
-                            if(nome.includes('milho')) document.getElementById('milho').innerText = valorFormatado;
-                            if(nome.includes('cafe') || nome.includes('café')) document.getElementById('cafe').innerText = valorFormatado;
-                            if(nome.includes('boi')) document.getElementById('boi').innerText = valorFormatado;
-                        }
-                    }
-                });
-            } catch(erro) {
-                console.error("Erro na planilha:", erro);
+    const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t=' + new Date().getTime();
+
+    const res = await fetch(urlCSV);
+    const textoCSV = await res.text();
+
+    const linhas = textoCSV.split(/\r?\n/);
+
+    linhas.forEach((linha, index) => {
+
+        if(index === 0) return;
+
+        const delimitador = linha.includes(';') ? ';' : ',';
+        const colunas = linha.split(delimitador);
+
+        if(colunas.length >= 4) {
+
+            const nome = colunas[0].trim().toLowerCase();
+            const contrato = colunas[1].trim();
+
+            let valor = colunas[2]
+                .replace(/"/g, '')
+                .replace(',', '.')
+                .trim();
+
+            let variacao = colunas[3]
+                .replace(/"/g, '')
+                .replace('%', '')
+                .replace(',', '.')
+                .trim();
+
+            valor = parseFloat(valor);
+            variacao = parseFloat(variacao);
+
+            if(!isNaN(valor)) {
+
+                const card = document.getElementById(nome);
+
+                if(card) {
+
+                    const valorFormatado = valor.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    let seta = '•';
+
+                    if(variacao > 0) seta = '▲';
+                    if(variacao < 0) seta = '▼';
+
+                    let cor = '#f5f5f0';
+
+                    if(variacao > 0) cor = '#00ff88';
+                    if(variacao < 0) cor = '#ff5c5c';
+
+                    card.innerHTML = `
+                        <div style="font-size:18px;opacity:0.7;margin-bottom:8px;">
+                            ${contrato}
+                        </div>
+
+                        <div>
+                            R$ ${valorFormatado}
+                        </div>
+
+                        <div style="
+                            font-size:20px;
+                            margin-top:10px;
+                            color:${cor};
+                            font-weight:700;
+                        ">
+                            ${seta} ${variacao.toFixed(2)}%
+                        </div>
+                    `;
+                }
             }
+        }
+    });
+
+} catch(erro) {
+
+    console.error("Erro na planilha:", erro);
+
+}
         }
 
         atualizarMoedas();
