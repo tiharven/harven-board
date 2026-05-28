@@ -327,7 +327,7 @@
 
         <div class="card gold">
             <div class="card-title">Soja</div>
-            <div class="card-value" id="soja">R$ --</div>
+            <div class="card-value" id="soja">US$ --</div>
         </div>
 
         <div class="card gold">
@@ -337,7 +337,7 @@
 
         <div class="card gold">
             <div class="card-title">Café</div>
-            <div class="card-value" id="cafe">R$ --</div>
+            <div class="card-value" id="cafe">US$ --</div>
         </div>
 
         <div class="card gold">
@@ -579,10 +579,8 @@
                                 if(variacao > 0) cor = '#00ff88';
                                 if(variacao < 0) cor = '#ff5c5c';
                                 
-                                // Cria a regra da moeda baseada no produto
                                 let simboloMoeda = "R$"; // Padrão é Real
 
-                                // Troque a variável 'nomeDoProduto' pela variável real que o seu código usa no loop (pode ser id, key, etc.)
                                 if (nomeDoProduto === "soja" || nomeDoProduto === "cafe") {
                                 simboloMoeda = "US$";
                                 }
@@ -598,8 +596,7 @@
                                     </div>
 
                                     <div>
-                                       // AQUI ESTÁ O PULO DO GATO: Trocamos o R$ fixo pela variável -->
-                                        ${simboloMoeda} ${valorFormatado}
+                                       ${simboloMoeda} ${valorFormatado}
                                     </div>
 
                                     <div style="
