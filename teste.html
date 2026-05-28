@@ -578,7 +578,15 @@
 
                                 if(variacao > 0) cor = '#00ff88';
                                 if(variacao < 0) cor = '#ff5c5c';
+                                
+                                // Cria a regra da moeda baseada no produto
+                                let simboloMoeda = "R$"; // Padrão é Real
 
+                                // Troque a variável 'nomeDoProduto' pela variável real que o seu código usa no loop (pode ser id, key, etc.)
+                                if (nomeDoProduto === "soja" || nomeDoProduto === "cafe") {
+                                simboloMoeda = "US$";
+                                }
+                                
                                 card.innerHTML = `
 
                                     <div style="
@@ -590,7 +598,8 @@
                                     </div>
 
                                     <div>
-                                        R$ ${valorFormatado}
+                                       // AQUI ESTÁ O PULO DO GATO: Trocamos o R$ fixo pela variável -->
+                                        ${simboloMoeda} ${valorFormatado}
                                     </div>
 
                                     <div style="
