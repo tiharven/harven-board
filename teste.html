@@ -623,7 +623,14 @@
                         }
                     }
                 });
+             
+                document.getElementById('ultima-atualizacao').innerText =
+                    'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
 
+            } catch(erro) {
+                console.error("Erro na planilha:", erro);
+            }
+        }
 /* MERCADO FINANCEIRO (ESTEIRA INFERIOR) */
 
         async function atualizarMercadoFinanceiro() {
@@ -686,14 +693,6 @@
 
             } catch(erro) {
                 console.error("Erro no ticker financeiro:", erro);
-            }
-        }
-                
-                document.getElementById('ultima-atualizacao').innerText =
-                    'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
-
-            } catch(erro) {
-                console.error("Erro na planilha:", erro);
             }
         }
 
