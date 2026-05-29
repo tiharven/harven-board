@@ -265,6 +265,15 @@
             font-weight: bold;
         }
 
+        .ticker-finance {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background-color: #111111;
+        }
+
+        .ticker-badge.finance {
+            background-color: var(--gold);
+            color: var(--black);
+        }
         @keyframes ticker {
 
             0% {
@@ -411,7 +420,15 @@
         <div class="ticker" id="ticker-noticias">
             Buscando últimas notícias...
         </div>
-
+    <!-- SEGUNDA ESTEIRA: MERCADO FINANCEIRO -->
+    <div class="ticker-wrap ticker-finance">
+        <div class="ticker-badge finance">
+            MERCADOS
+        </div>
+        <div class="ticker" id="ticker-finance">
+            Carregando cotações da B3 e Global...
+        </div>
+    </div>
     </div>
 
     <script>
@@ -607,6 +624,71 @@
                     }
                 });
 
+/* MERCADO FINANCEIRO (ESTEIRA INFERIOR) */
+
+        async function atualizarMercadoFinanceiro() {
+            try {
+                // Link oficial da sua aba MERCADO_FINANCEIRO
+                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=csv&t=' + new Date().getTime();
+                
+                const res = await fetch(urlCSV);
+                const textoCSV = await res.text();
+                const linhas = textoCSV.split(/\r?\n/);
+
+                let textoTicker = '';
+
+                linhas.forEach((linha, index) => {
+                    if(index === 0) return; // Ignora o cabeçalho
+
+                    const delimitador = linha.includes(';') ? ';' : ',';
+                    const colunas = linha.split(delimitador);
+
+                    if(colunas.length >= 2) {
+                        const nome = colunas[0].trim().toUpperCase();
+                        
+                        let valorStr = colunas[1] ? colunas[1].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
+                        let variacaoStr = colunas[2] ? colunas[2].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
+
+                        let valor = parseFloat(valorStr);
+                        let variacao = parseFloat(variacaoStr);
+
+                        if(isNaN(variacao)) variacao = 0;
+
+                        if(!isNaN(valor) && valor > 0) {
+                            
+                            // GATILHOS DAS PLACAS DIVISÓRIAS
+                            if (nome === 'IBOV') {
+                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🇧🇷 B3 / BRASIL</span>`;
+                            } else if (nome === 'S&P500') {
+                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🇺🇸 NYSE / GLOBAL</span>`;
+                            } else if (nome === 'BTC/BRL') {
+                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🪙 CRIPTO</span>`;
+                            }
+
+                            const valorFormatado = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            
+                            let cor = '#f5f5f0';
+                            let seta = '•';
+                            if(variacao > 0) { cor = '#00ff88'; seta = '▲'; }
+                            if(variacao < 0) { cor = '#ff5c5c'; seta = '▼'; }
+
+                            textoTicker += `
+                                <span style="color: var(--off-white); margin-left: 15px; margin-right: 8px;">${nome}</span>
+                                <span style="color: ${cor}; font-weight: bold;">
+                                    ${valorFormatado} (${seta} ${variacao.toFixed(2)}%)
+                                </span>
+                            `;
+                        }
+                    }
+                });
+
+                document.getElementById('ticker-finance').innerHTML = textoTicker;
+
+            } catch(erro) {
+                console.error("Erro no ticker financeiro:", erro);
+            }
+        }
+                
                 document.getElementById('ultima-atualizacao').innerText =
                     'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
 
@@ -621,6 +703,7 @@
         atualizarClima();
         atualizarNoticias();
         atualizarPlanilhaAgro();
+        atualizarMercadoFinanceiro();
 
         /* INTERVALOS */
 
@@ -628,6 +711,7 @@
         setInterval(atualizarClima, 1800000);
         setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
+        setInterval(atualizarMercadoFinanceiro, 300000);
 
     </script>
 
