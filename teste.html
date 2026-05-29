@@ -716,13 +716,15 @@
                 // O seu ID oficial do Google Drive
                 const idDoArquivo = '1SUsSuYEdVw5lyA-k9RjsPAvFR3F4rs9t'; 
                 
-                // Monta o link direto de download (Bypass do Google)
-                const urlJSON = `https://drive.google.com/uc?export=download&id=${idDoArquivo}`;
+                // Monta o link do Google Drive
+                const linkDrive = `https://drive.google.com/uc?export=download&id=${idDoArquivo}`;
+                
+                // A CHAVE MESTRA: Usamos o proxy gratuito AllOrigins para burlar o bloqueio do Google
+                const urlJSON = `https://api.allorigins.win/raw?url=${encodeURIComponent(linkDrive)}`;
                 
                 const res = await fetch(urlJSON);
                 
-                // Se o Google bloquear por segurança, ele vai avisar no erro
-                if (!res.ok) throw new Error("Bloqueio de CORS do Google Drive");
+                if (!res.ok) throw new Error("Erro ao baixar os dados da agenda");
                 
                 const eventos = await res.json();
                 let textoTicker = '';
@@ -747,11 +749,9 @@
 
             } catch(erro) {
                 console.error("Erro na agenda:", erro);
-                // Se der o bloqueio do Google Drive, nós avisamos na tela
-                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Conectando ao sistema de salas... (Se demorar, verifique o Console/F12)</span>';
+                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Aguardando sincronização com o sistema Harven...</span>';
             }
         }
-
         /* START */
 
         atualizarMoedas();
