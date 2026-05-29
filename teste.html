@@ -269,6 +269,17 @@
             color: var(--black);
         }
 
+		/* CORES DA TERCEIRA ESTEIRA (COLE ESTE BLOCO AQUI) */
+        .ticker-agenda {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background-color: var(--black); 
+        }
+
+        .ticker-badge.agenda {
+            background-color: var(--off-white);
+            color: var(--black);
+        }
+
         @keyframes ticker {
 
             0% {
@@ -423,7 +434,14 @@
         <div class="ticker" id="ticker-finance">
             Carregando cotações da B3 e Global...
         </div>
-    </div> <!-- FIM DA SEGUNDA ESTEIRA -->
+    </div> <div class="ticker-wrap ticker-agenda">
+        <div class="ticker-badge agenda">
+            AGENDA HARVEN
+        </div>
+        <div class="ticker" id="ticker-agenda">
+            Sincronizando salas do Outlook...
+        </div>
+    </div>
 
     <script>
 
@@ -690,6 +708,49 @@
                 console.error("Erro no ticker financeiro:", erro);
             }
         }
+		
+		/* AGENDA DAS SALAS (TERCEIRA ESTEIRA) */
+
+        async function atualizarAgenda() {
+            try {
+                // O seu ID oficial do Google Drive
+                const idDoArquivo = '1SUsSuYEdVw5lyA-k9RjsPAvFR3F4rs9t'; 
+                
+                // Monta o link direto de download (Bypass do Google)
+                const urlJSON = `https://drive.google.com/uc?export=download&id=${idDoArquivo}`;
+                
+                const res = await fetch(urlJSON);
+                
+                // Se o Google bloquear por segurança, ele vai avisar no erro
+                if (!res.ok) throw new Error("Bloqueio de CORS do Google Drive");
+                
+                const eventos = await res.json();
+                let textoTicker = '';
+
+                if(eventos && eventos.length > 0) {
+                    eventos.forEach(evento => {
+                        
+                        // LIMPEZA MÁGICA: Apaga os nomes em MAIÚSCULO do começo do título
+                        let tituloLimpo = evento.titulo.replace(/^([A-ZÀ-Ú]+\s)+/, '').trim();
+                        
+                        textoTicker += `
+                            <span style="color: var(--neon); font-weight: bold; margin-left: 60px;">${evento.horario}</span>
+                            <span style="color: var(--gold); font-weight: 800; margin-left: 15px;">| ${evento.sala} |</span>
+                            <span style="color: var(--off-white); margin-left: 15px;">${tituloLimpo}</span>
+                        `;
+                    });
+                } else {
+                    textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Nenhum evento agendado para o dia de hoje.</span>';
+                }
+
+                document.getElementById('ticker-agenda').innerHTML = textoTicker;
+
+            } catch(erro) {
+                console.error("Erro na agenda:", erro);
+                // Se der o bloqueio do Google Drive, nós avisamos na tela
+                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Conectando ao sistema de salas... (Se demorar, verifique o Console/F12)</span>';
+            }
+        }
 
         /* START */
 
@@ -698,6 +759,7 @@
         atualizarNoticias();
         atualizarPlanilhaAgro();
 		atualizarMercadoFinanceiro();
+		atualizarAgenda();
 
         /* INTERVALOS */
 
@@ -706,6 +768,7 @@
         setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
 		setInterval(atualizarMercadoFinanceiro, 300000);
+		setInterval(atualizarAgenda, 300000);
 
     </script>
 
