@@ -225,24 +225,18 @@
         .ticker-badge {
             background-color: var(--neon);
             color: var(--black);
-
             font-weight: 800;
-
-            padding: 0 30px;
-
+            
+            width: 240px; /* LARGURA FIXA PARA IGUALAR AS DUAS */
+            justify-content: center; /* CENTRALIZA O TEXTO DENTRO DA CAIXA */
+            
             height: 100%;
-
             display: flex;
             align-items: center;
-
             font-size: 20px;
-
             z-index: 10;
-
             text-transform: uppercase;
-
             box-shadow: 10px 0 20px rgba(0,0,0,0.8);
-
             position: absolute;
             left: 0;
         }
@@ -265,7 +259,7 @@
             font-weight: bold;
         }
 
-        .ticker-finance {
+		.ticker-finance {
             border-top: 1px solid rgba(255,255,255,0.1);
             background-color: #111111;
         }
@@ -274,6 +268,7 @@
             background-color: var(--gold);
             color: var(--black);
         }
+
         @keyframes ticker {
 
             0% {
@@ -403,23 +398,23 @@
                 </div>
             </div>
 
-            <div style="font-size:80px;">
+         <div style="font-size:80px;">
                 🌤️
             </div>
-
         </div>
 
-    </div>
+    </div> <!-- ESTA DIV FECHA A ÁREA DOS CARTÕES LÁ DE CIMA -->
 
+    <!-- PRIMEIRA ESTEIRA: GIRO DO AGRO -->
     <div class="ticker-wrap">
-
         <div class="ticker-badge">
             Giro do Agro
         </div>
-
         <div class="ticker" id="ticker-noticias">
             Buscando últimas notícias...
         </div>
+    </div> <!-- FIM DA PRIMEIRA ESTEIRA -->
+
     <!-- SEGUNDA ESTEIRA: MERCADO FINANCEIRO -->
     <div class="ticker-wrap ticker-finance">
         <div class="ticker-badge finance">
@@ -428,8 +423,7 @@
         <div class="ticker" id="ticker-finance">
             Carregando cotações da B3 e Global...
         </div>
-    </div>
-    </div>
+    </div> <!-- FIM DA SEGUNDA ESTEIRA -->
 
     <script>
 
@@ -623,13 +617,14 @@
                         }
                     }
                 });
-             
+
                 document.getElementById('ultima-atualizacao').innerText =
                     'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
 
             } catch(erro) {
                 console.error("Erro na planilha:", erro);
             }
+        }
 
 /* MERCADO FINANCEIRO (ESTEIRA INFERIOR) */
 
@@ -695,9 +690,6 @@
                 console.error("Erro no ticker financeiro:", erro);
             }
         }
-            
-        }
-
 
         /* START */
 
@@ -705,7 +697,7 @@
         atualizarClima();
         atualizarNoticias();
         atualizarPlanilhaAgro();
-        atualizarMercadoFinanceiro();
+		atualizarMercadoFinanceiro();
 
         /* INTERVALOS */
 
@@ -713,7 +705,7 @@
         setInterval(atualizarClima, 1800000);
         setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
-        setInterval(atualizarMercadoFinanceiro, 300000);
+		setInterval(atualizarMercadoFinanceiro, 300000);
 
     </script>
 
