@@ -269,6 +269,17 @@
             color: var(--black);
         }
 
+		/* CORES DA TERCEIRA ESTEIRA (COLE ESTE BLOCO AQUI) */
+        .ticker-agenda {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background-color: var(--black); 
+        }
+
+        .ticker-badge.agenda {
+            background-color: var(--off-white);
+            color: var(--black);
+        }
+
         @keyframes ticker {
 
             0% {
@@ -423,7 +434,14 @@
         <div class="ticker" id="ticker-finance">
             Carregando cotações da B3 e Global...
         </div>
-    </div> <!-- FIM DA SEGUNDA ESTEIRA -->
+    </div> <div class="ticker-wrap ticker-agenda">
+        <div class="ticker-badge agenda">
+            AGENDA HARVEN
+        </div>
+        <div class="ticker" id="ticker-agenda">
+            Sincronizando salas do Outlook...
+        </div>
+    </div>
 
     <script>
 
@@ -690,6 +708,111 @@
                 console.error("Erro no ticker financeiro:", erro);
             }
         }
+		
+/* AGENDA DAS SALAS (LEITURA DIRETA DO CSV DA PLANILHA) */
+
+async function atualizarAgenda() {
+
+    try {
+
+        // O link da sua aba AGENDA publicada como CSV
+
+        // O parâmetro &t=... no final serve para evitar que o navegador leia uma versão antiga em cache
+
+        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime();
+
+        
+
+        const res = await fetch(urlCSV);
+
+        if (!res.ok) throw new Error("Erro ao acessar a agenda pública");
+
+        
+
+        const textoCSV = await res.text();
+
+        const linhas = textoCSV.split(/\r?\n/);
+
+
+
+        let textoTicker = '';
+
+        let temEvento = false;
+
+
+
+        // Começamos do índice 1 para pular o cabeçalho
+
+        for (let i = 1; i < linhas.length; i++) {
+
+            if (linhas[i].trim() === '') continue; // Pula linhas vazias
+
+
+
+            // Substitua a linha: const colunas = linhas[i].split(',');
+			// Por esta verificação inteligente:
+			const delimitador = linhas[i].includes(';') ? ';' : ',';
+			const colunas = linhas[i].split(delimitador);
+
+            
+
+            // Verifica se a linha tem os dados esperados
+
+            if (colunas.length >= 3) {
+
+                const sala = colunas[0].trim();
+
+                const titulo = colunas[1].trim();
+
+                const horario = colunas[2].trim();
+
+
+
+                // Limpeza do nome do professor (se houver)
+
+                let tituloLimpo = titulo.replace(/^([A-ZÀ-Ú]+\s)+/, '').trim();
+
+
+
+                textoTicker += `
+
+                    <span style="color: var(--neon); font-weight: bold; margin-left: 60px;">${horario}</span>
+
+                    <span style="color: var(--gold); font-weight: 800; margin-left: 15px;">| ${sala} |</span>
+
+                    <span style="color: var(--off-white); margin-left: 15px;">${tituloLimpo}</span>
+
+                `;
+
+                temEvento = true;
+
+            }
+
+        }
+
+
+
+        if(!temEvento) {
+
+            textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Agenda sem eventos para hoje.</span>';
+
+        }
+
+
+
+        document.getElementById('ticker-agenda').innerHTML = textoTicker;
+
+
+
+    } catch(erro) {
+
+        console.error("Erro na agenda:", erro);
+
+        document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando com a agenda...</span>';
+
+    }
+
+} 
 
         /* START */
 
@@ -698,6 +821,7 @@
         atualizarNoticias();
         atualizarPlanilhaAgro();
 		atualizarMercadoFinanceiro();
+		atualizarAgenda();
 
         /* INTERVALOS */
 
@@ -706,6 +830,7 @@
         setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
 		setInterval(atualizarMercadoFinanceiro, 300000);
+		setInterval(atualizarAgenda, 300000);
 
     </script>
 
