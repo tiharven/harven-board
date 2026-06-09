@@ -209,14 +209,17 @@
        /* TICKER */
 
         .ticker-wrap {
-            height: 95px; /* Aumentado de 70px para 95px */
+            height: 95px;
+            min-height: 95px; /* Garantia de que não vai ficar menor que isso */
+            flex-shrink: 0; /* O SEGREDO AQUI: Impede o esmagamento */
+
             background-color: var(--black);
             display: flex;
             align-items: center;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
-            border-top: 1px solid rgba(255,255,255,0.1); /* Linha divisória sutil */
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .ticker-badge {
