@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
             --bg-dark-green: #1c2d1b;
             --black: #000000;
@@ -28,21 +27,15 @@
         }
 
         /* HEADER */
-
         .header {
             background-color: var(--black);
             height: 110px;
-
             display: flex;
             justify-content: space-between;
             align-items: center;
-
             padding: 0 50px;
-
             border-bottom: 4px solid var(--neon);
-
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-
             z-index: 10;
         }
 
@@ -92,27 +85,28 @@
         }
 
         /* CONTENT */
-
         .content {
             flex: 1;
-            padding: 20px 50px; /* Reduzimos o espaço em branco superior/inferior */
+            padding: 15px 50px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 20px; /* Reduzimos o espaçamento entre os cartões */
-            min-height: 0; /* Truque mestre: impede que os cartões esturem a tela */
+            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 15px;
+            min-height: 0;
         }
 
         .card {
             background-color: var(--black);
             border-radius: 16px;
-            padding: 20px 30px; /* Menos espaço sobrando dentro dos cartões */
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.05);
+            min-height: 0;
+            overflow: hidden;
         }
 
         .card::before {
@@ -130,17 +124,17 @@
         .card.gold::before { background-color: var(--gold); }
 
         .card-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--off-white);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             opacity: 0.7;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .card-value {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 800;
         }
 
@@ -148,7 +142,6 @@
         .card.gold .card-value { color: var(--gold); }
 
         /* WEATHER */
-
         .weather-card {
             grid-column: span 2;
             background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(28,45,27,0.8) 100%);
@@ -161,7 +154,7 @@
         .weather-info { text-align: center; }
 
         .weather-city {
-            font-size: 22px;
+            font-size: 20px;
             color: var(--gold);
             font-weight: 600;
             text-transform: uppercase;
@@ -169,17 +162,16 @@
         }
 
         .weather-temp {
-            font-size: 68px;
+            font-size: 55px;
             font-weight: 800;
             color: var(--off-white);
         }
 
-        /* TICKER E ESTEIRAS (AJUSTADOS PARA CABER AS 3) */
-
+        /* TICKER E ESTEIRAS */
         .ticker-wrap {
-            height: 60px; /* Altura ideal para empilhar 3 na tela */
+            height: 60px;
             min-height: 60px;
-            flex-shrink: 0; /* Proíbe o navegador de esmagar as esteiras */
+            flex-shrink: 0;
             background-color: var(--black);
             display: flex;
             align-items: center;
@@ -207,7 +199,7 @@
         .ticker {
             padding-left: 260px;
             display: inline-block;
-            animation: ticker 75s linear infinite; /* Velocidade equilibrada */
+            animation: ticker 75s linear infinite;
             font-size: 24px;
             color: var(--off-white);
         }
@@ -219,55 +211,33 @@
         }
 
         .ticker-badge.agro { background-color: var(--neon); color: var(--black); }
-
         .ticker-finance { background-color: #111111; }
         .ticker-badge.finance { background-color: var(--gold); color: var(--black); }
-
         .ticker-agenda { background-color: var(--black); }
         .ticker-badge.agenda { background-color: var(--off-white); color: var(--black); }
 
         @keyframes ticker {
             0% { transform: translateX(100vw); }
             100% { transform: translateX(-100%); }
-        }    </style>
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="header">
-
-        <img
-            src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png"
-            alt="Harven Logo"
-            class="logo"
-        >
-
+        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo">
         <div class="title-container">
-            <h1 class="title">
-                HARVEN<span>BOARD</span>
-            </h1>
+            <h1 class="title">HARVEN<span>BOARD</span></h1>
         </div>
-
         <div class="clock-container">
-
-            <div class="clock" id="relogio">
-                00:00
-            </div>
-
-            <div class="date" id="data">
-                Carregando data...
-            </div>
-
-            <div id="ultima-atualizacao">
-                Atualizando...
-            </div>
-
+            <div class="clock" id="relogio">00:00</div>
+            <div class="date" id="data">Carregando data...</div>
+            <div id="ultima-atualizacao">Atualizando...</div>
         </div>
-
     </div>
 
     <div class="content">
-
         <div class="card neon">
             <div class="card-title">Dólar (USD)</div>
             <div class="card-value" id="dolar">R$ --</div>
@@ -278,343 +248,205 @@
             <div class="card-value" id="euro">R$ --</div>
         </div>
 
-                        <div class="card gold">
+        <div class="card gold">
             <div class="card-title">Soja</div>
-            
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
                 <div class="card-value" id="soja">--</div>
             </div>
-
             <div>
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
                 <div class="card-value" id="soja_fisico">--</div>
             </div>
         </div>
 
         <div class="card gold">
             <div class="card-title">Milho</div>
-            
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
                 <div class="card-value" id="milho">--</div>
             </div>
-
             <div>
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
                 <div class="card-value" id="milho_fisico">--</div>
             </div>
         </div>
 
         <div class="card gold">
             <div class="card-title">Café</div>
-            
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
                 <div class="card-value" id="cafe">--</div>
             </div>
-
             <div>
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
                 <div class="card-value" id="cafe_fisico">--</div>
             </div>
         </div>
 
         <div class="card gold">
             <div class="card-title">Boi Gordo</div>
-            
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
                 <div class="card-value" id="boi">--</div>
             </div>
-
             <div>
-                <div style="font-size: 12px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
+                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
                 <div class="card-value" id="boi_fisico">--</div>
             </div>
         </div>
 
-
         <div class="card weather-card">
-
             <div class="weather-info">
-                <div class="weather-city">
-                    Ribeirão Preto / SP
-                </div>
-
-                <div class="weather-temp" id="temp">
-                    --°C
-                </div>
+                <div class="weather-city">Ribeirão Preto / SP</div>
+                <div class="weather-temp" id="temp">--°C</div>
             </div>
-
-         <div style="font-size:80px;">
-                🌤️
-            </div>
+            <div style="font-size:60px;">🌤️</div>
         </div>
-
-    </div> <!-- ESTA DIV FECHA A ÁREA DOS CARTÕES LÁ DE CIMA -->
+    </div> 
 
     <!-- PRIMEIRA ESTEIRA: GIRO DO AGRO -->
     <div class="ticker-wrap">
-        <div class="ticker-badge">
-            Giro do Agro
-        </div>
+        <div class="ticker-badge agro">GIRO DO AGRO</div>
         <div class="ticker" id="ticker-noticias">
             Buscando últimas notícias...
         </div>
-    </div> <!-- FIM DA PRIMEIRA ESTEIRA -->
+    </div>
 
-    <!-- SEGUNDA ESTEIRA: MERCADO FINANCEIRO -->
+    <!-- SEGUNDA ESTEIRA: MERCADOS -->
     <div class="ticker-wrap ticker-finance">
-        <div class="ticker-badge finance">
-            MERCADOS
-        </div>
+        <div class="ticker-badge finance">MERCADOS</div>
         <div class="ticker" id="ticker-finance">
             Carregando cotações da B3 e Global...
         </div>
-    </div> <div class="ticker-wrap ticker-agenda">
-        <div class="ticker-badge agenda">
-            AGENDA HARVEN
-        </div>
+    </div> 
+    
+    <!-- TERCEIRA ESTEIRA: AGENDA -->
+    <div class="ticker-wrap ticker-agenda">
+        <div class="ticker-badge agenda">AGENDA HARVEN</div>
         <div class="ticker" id="ticker-agenda">
             Sincronizando salas do Outlook...
         </div>
     </div>
 
     <script>
-
         /* RELÓGIO */
-
         function atualizarRelogio() {
-
             const agora = new Date();
-
             document.getElementById('relogio').innerText =
-                String(agora.getHours()).padStart(2, '0')
-                + ':'
-                + String(agora.getMinutes()).padStart(2, '0');
-
+                String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
             document.getElementById('data').innerText =
-                agora.toLocaleDateString('pt-BR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long'
-                });
+                agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
         }
-
         setInterval(atualizarRelogio, 1000);
-
         atualizarRelogio();
 
         /* MOEDAS */
-
         async function atualizarMoedas() {
-
             try {
-
-                const res = await fetch(
-                    'https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL'
-                );
-
+                const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL');
                 const dados = await res.json();
-
-                const formatador =
-                    new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                    });
-
-                document.getElementById('dolar').innerText =
-                    formatador.format(parseFloat(dados.USDBRL.bid));
-
-                document.getElementById('euro').innerText =
-                    formatador.format(parseFloat(dados.EURBRL.bid));
-
-            } catch(e) {
-
-                console.error(e);
-
-            }
+                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+                document.getElementById('dolar').innerText = formatador.format(parseFloat(dados.USDBRL.bid));
+                document.getElementById('euro').innerText = formatador.format(parseFloat(dados.EURBRL.bid));
+            } catch(e) { console.error(e); }
         }
 
         /* CLIMA */
-
         async function atualizarClima() {
-
             try {
-
-                const res = await fetch(
-                    'https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true'
-                );
-
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true');
                 const dados = await res.json();
-
-                document.getElementById('temp').innerText =
-                    Math.round(dados.current_weather.temperature) + '°C';
-
-            } catch(e) {
-
-                console.error(e);
-
-            }
+                document.getElementById('temp').innerText = Math.round(dados.current_weather.temperature) + '°C';
+            } catch(e) { console.error(e); }
         }
 
         /* NOTÍCIAS */
-
         async function atualizarNoticias() {
-
             try {
-
-                const urlRSS =
-                    'https://www.canalrural.com.br/feed/';
-
-                const api =
-                    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlRSS)}`;
-
+                const urlRSS = 'https://www.canalrural.com.br/feed/';
+                const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlRSS)}`;
                 const res = await fetch(api);
-
                 const dados = await res.json();
-
                 if(dados.status === 'ok') {
-
                     let textoFinal = '';
-
                     dados.items.slice(0, 8).forEach(noticia => {
-
-                        textoFinal +=
-                            `${noticia.title.toUpperCase()} <span>|</span> `;
+                        textoFinal += `${noticia.title.toUpperCase()} <span>|</span> `;
                     });
-
-                    document.getElementById('ticker-noticias').innerHTML =
-                        textoFinal;
+                    document.getElementById('ticker-noticias').innerHTML = textoFinal;
                 }
-
-            } catch(e) {
-
-                console.error(e);
-
-            }
+            } catch(e) { console.error(e); }
         }
 
         /* COMMODITIES */
-
         async function atualizarPlanilhaAgro() {
-
             try {
-
-                const urlCSV =
-                    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t='
-                    + new Date().getTime();
-
+                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t=' + new Date().getTime();
                 const res = await fetch(urlCSV);
-
                 const textoCSV = await res.text();
-
                 const linhas = textoCSV.split(/\r?\n/);
 
                 linhas.forEach((linha, index) => {
-
                     if(index === 0) return;
-
                     const delimitador = linha.includes(';') ? ';' : ',';
-
                     const colunas = linha.split(delimitador);
-
                     if(colunas.length >= 4) {
-
                         const nome = colunas[0].trim().toLowerCase();
                         const contrato = colunas[1].trim();
-
-                        // Remove letras, espaços e símbolos de moeda, mantendo apenas números, vírgulas, pontos e sinais de negativo
                         let valorStr = colunas[2].replace(/[^\d,\.-]/g, '').replace(',', '.');
                         let variacaoStr = colunas[3].replace(/[^\d,\.-]/g, '').replace(',', '.');
-
                         let valor = parseFloat(valorStr);
                         let variacao = parseFloat(variacaoStr);
 
                         if(!isNaN(valor) && valor > 0) {
-
                             const card = document.getElementById(nome);
-
                             if(card) {
-
-                                card.dataset.ultimoValor = valor;
-
-                                const valorFormatado = valor.toLocaleString('pt-BR', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    });
-
+                                const valorFormatado = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                 let seta = '•';
                                 if(variacao > 0) seta = '▲';
                                 if(variacao < 0) seta = '▼';
-
                                 let cor = '#f5f5f0';
                                 if(variacao > 0) cor = '#00ff88';
                                 if(variacao < 0) cor = '#ff5c5c';
                                 
                                 let simboloMoeda = "R$";
-                                if (nome === "soja" || nome === "cafe") {
-                                    simboloMoeda = "US$";
-                                }
+                                if (nome === "soja" || nome === "cafe") simboloMoeda = "US$";
                                 
                                 card.innerHTML = `
-                                    <div style="font-size:14px; opacity:0.7; margin-bottom:8px;">
-                                        ${contrato}
-                                    </div>
-                                    <div>
-                                        ${simboloMoeda} ${valorFormatado}
-                                    </div>
-                                    <div style="font-size:16px; margin-top:10px; color:${cor}; font-weight:700;">
-                                        ${seta} ${variacao.toFixed(2)}%
-                                    </div>
+                                    <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">${contrato}</div>
+                                    <div>${simboloMoeda} ${valorFormatado}</div>
+                                    <div style="font-size:14px; margin-top:8px; color:${cor}; font-weight:700;">${seta} ${variacao.toFixed(2)}%</div>
                                 `;
                             }
                         }
                     }
                 });
-
-                document.getElementById('ultima-atualizacao').innerText =
-                    'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
-
-            } catch(erro) {
-                console.error("Erro na planilha:", erro);
-            }
+                document.getElementById('ultima-atualizacao').innerText = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+            } catch(erro) { console.error("Erro na planilha:", erro); }
         }
 
-/* MERCADO FINANCEIRO (ESTEIRA INFERIOR) */
-
+        /* MERCADO FINANCEIRO */
         async function atualizarMercadoFinanceiro() {
             try {
-                // Link oficial da sua aba MERCADO_FINANCEIRO
                 const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=csv&t=' + new Date().getTime();
-                
                 const res = await fetch(urlCSV);
                 const textoCSV = await res.text();
                 const linhas = textoCSV.split(/\r?\n/);
-
                 let textoTicker = '';
 
                 linhas.forEach((linha, index) => {
-                    if(index === 0) return; // Ignora o cabeçalho
-
+                    if(index === 0) return;
                     const delimitador = linha.includes(';') ? ';' : ',';
                     const colunas = linha.split(delimitador);
-
                     if(colunas.length >= 2) {
                         const nome = colunas[0].trim().toUpperCase();
-                        
                         let valorStr = colunas[1] ? colunas[1].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
                         let variacaoStr = colunas[2] ? colunas[2].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
-
                         let valor = parseFloat(valorStr);
                         let variacao = parseFloat(variacaoStr);
-
                         if(isNaN(variacao)) variacao = 0;
 
                         if(!isNaN(valor) && valor > 0) {
-                            
-                            // GATILHOS DAS PLACAS DIVISÓRIAS
                             if (nome === 'IBOV') {
                                 textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🇧🇷 B3 / BRASIL</span>`;
                             } else if (nome === 'S&P500') {
@@ -622,9 +454,7 @@
                             } else if (nome === 'BTC/BRL') {
                                 textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🪙 CRIPTO</span>`;
                             }
-
                             const valorFormatado = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                            
                             let cor = '#f5f5f0';
                             let seta = '•';
                             if(variacao > 0) { cor = '#00ff88'; seta = '▲'; }
@@ -632,145 +462,69 @@
 
                             textoTicker += `
                                 <span style="color: var(--off-white); margin-left: 15px; margin-right: 8px;">${nome}</span>
-                                <span style="color: ${cor}; font-weight: bold;">
-                                    ${valorFormatado} (${seta} ${variacao.toFixed(2)}%)
-                                </span>
+                                <span style="color: ${cor}; font-weight: bold;">${valorFormatado} (${seta} ${variacao.toFixed(2)}%)</span>
                             `;
                         }
                     }
                 });
-
                 document.getElementById('ticker-finance').innerHTML = textoTicker;
+            } catch(erro) { console.error("Erro no ticker financeiro:", erro); }
+        }
+        
+        /* AGENDA */
+        async function atualizarAgenda() {
+            try {
+                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime();
+                const res = await fetch(urlCSV);
+                if (!res.ok) throw new Error("Erro ao acessar a agenda pública");
+                
+                const textoCSV = await res.text();
+                const linhas = textoCSV.split(/\r?\n/);
+                let textoTicker = '';
+                let temEvento = false;
 
+                for (let i = 1; i < linhas.length; i++) {
+                    if (linhas[i].trim() === '') continue;
+                    const delimitador = linhas[i].includes(';') ? ';' : ',';
+                    const colunas = linhas[i].split(delimitador);
+                    
+                    if (colunas.length >= 3) {
+                        const sala = colunas[0].trim();
+                        const titulo = colunas[1].trim();
+                        const horario = colunas[2].trim();
+                        let tituloLimpo = titulo.replace(/^([A-ZÀ-Ú]+\s)+/, '').trim();
+
+                        textoTicker += `
+                            <span style="color: var(--neon); font-weight: bold; margin-left: 60px;">${horario}</span>
+                            <span style="color: var(--gold); font-weight: 800; margin-left: 15px;">| ${sala} |</span>
+                            <span style="color: var(--off-white); margin-left: 15px;">${tituloLimpo}</span>
+                        `;
+                        temEvento = true;
+                    }
+                }
+                if(!temEvento) textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Agenda sem eventos para hoje.</span>';
+                document.getElementById('ticker-agenda').innerHTML = textoTicker;
             } catch(erro) {
-                console.error("Erro no ticker financeiro:", erro);
+                console.error("Erro na agenda:", erro);
+                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando com a agenda...</span>';
             }
-        }
-		
-/* AGENDA DAS SALAS (LEITURA DIRETA DO CSV DA PLANILHA) */
-
-async function atualizarAgenda() {
-
-    try {
-
-        // O link da sua aba AGENDA publicada como CSV
-
-        // O parâmetro &t=... no final serve para evitar que o navegador leia uma versão antiga em cache
-
-        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime();
-
-        
-
-        const res = await fetch(urlCSV);
-
-        if (!res.ok) throw new Error("Erro ao acessar a agenda pública");
-
-        
-
-        const textoCSV = await res.text();
-
-        const linhas = textoCSV.split(/\r?\n/);
-
-
-
-        let textoTicker = '';
-
-        let temEvento = false;
-
-
-
-        // Começamos do índice 1 para pular o cabeçalho
-
-        for (let i = 1; i < linhas.length; i++) {
-
-            if (linhas[i].trim() === '') continue; // Pula linhas vazias
-
-
-
-            // Substitua a linha: const colunas = linhas[i].split(',');
-			// Por esta verificação inteligente:
-			const delimitador = linhas[i].includes(';') ? ';' : ',';
-			const colunas = linhas[i].split(delimitador);
-
-            
-
-            // Verifica se a linha tem os dados esperados
-
-            if (colunas.length >= 3) {
-
-                const sala = colunas[0].trim();
-
-                const titulo = colunas[1].trim();
-
-                const horario = colunas[2].trim();
-
-
-
-                // Limpeza do nome do professor (se houver)
-
-                let tituloLimpo = titulo.replace(/^([A-ZÀ-Ú]+\s)+/, '').trim();
-
-
-
-                textoTicker += `
-
-                    <span style="color: var(--neon); font-weight: bold; margin-left: 60px;">${horario}</span>
-
-                    <span style="color: var(--gold); font-weight: 800; margin-left: 15px;">| ${sala} |</span>
-
-                    <span style="color: var(--off-white); margin-left: 15px;">${tituloLimpo}</span>
-
-                `;
-
-                temEvento = true;
-
-            }
-
-        }
-
-
-
-        if(!temEvento) {
-
-            textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Agenda sem eventos para hoje.</span>';
-
-        }
-
-
-
-        document.getElementById('ticker-agenda').innerHTML = textoTicker;
-
-
-
-    } catch(erro) {
-
-        console.error("Erro na agenda:", erro);
-
-        document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando com a agenda...</span>';
-
-    }
-
-} 
+        } 
 
         /* START */
-
         atualizarMoedas();
         atualizarClima();
         atualizarNoticias();
         atualizarPlanilhaAgro();
-		atualizarMercadoFinanceiro();
-		atualizarAgenda();
+        atualizarMercadoFinanceiro();
+        atualizarAgenda();
 
         /* INTERVALOS */
-
         setInterval(atualizarMoedas, 300000);
         setInterval(atualizarClima, 1800000);
         setInterval(atualizarPlanilhaAgro, 600000);
         setInterval(atualizarNoticias, 1800000);
-		setInterval(atualizarMercadoFinanceiro, 300000);
-		setInterval(atualizarAgenda, 300000);
-
+        setInterval(atualizarMercadoFinanceiro, 300000);
+        setInterval(atualizarAgenda, 300000);
     </script>
-
 </body>
 </html>
