@@ -95,57 +95,39 @@
 
         .content {
             flex: 1;
-
-            padding: 40px 50px;
-
+            padding: 20px 50px; /* Reduzimos o espaço em branco superior/inferior */
             display: grid;
-
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
-
-            gap: 30px;
+            gap: 20px; /* Reduzimos o espaçamento entre os cartões */
+            min-height: 0; /* Truque mestre: impede que os cartões esturem a tela */
         }
 
         .card {
             background-color: var(--black);
-
             border-radius: 16px;
-
-            padding: 30px;
-
+            padding: 20px 30px; /* Menos espaço sobrando dentro dos cartões */
             display: flex;
             flex-direction: column;
             justify-content: center;
-
             position: relative;
-
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .card::before {
             content: '';
-
             position: absolute;
-
             top: 0;
             left: 0;
-
             width: 8px;
             height: 100%;
-
             border-top-left-radius: 16px;
             border-bottom-left-radius: 16px;
         }
 
-        .card.neon::before {
-            background-color: var(--neon);
-        }
-
-        .card.gold::before {
-            background-color: var(--gold);
-        }
+        .card.neon::before { background-color: var(--neon); }
+        .card.gold::before { background-color: var(--gold); }
 
         .card-title {
             font-size: 20px;
@@ -162,35 +144,21 @@
             font-weight: 800;
         }
 
-        .card.neon .card-value {
-            color: var(--neon);
-        }
-
-        .card.gold .card-value {
-            color: var(--gold);
-        }
+        .card.neon .card-value { color: var(--neon); }
+        .card.gold .card-value { color: var(--gold); }
 
         /* WEATHER */
 
         .weather-card {
             grid-column: span 2;
-
-            background: linear-gradient(
-                135deg,
-                rgba(0,0,0,0.8) 0%,
-                rgba(28,45,27,0.8) 100%
-            );
-
+            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(28,45,27,0.8) 100%);
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
-
             border: 1px solid var(--neon);
         }
 
-        .weather-info {
-            text-align: center;
-        }
+        .weather-info { text-align: center; }
 
         .weather-city {
             font-size: 22px;
@@ -206,13 +174,12 @@
             color: var(--off-white);
         }
 
-       /* TICKER */
+        /* TICKER E ESTEIRAS (AJUSTADOS PARA CABER AS 3) */
 
         .ticker-wrap {
-            height: 95px;
-            min-height: 95px; /* Garantia de que não vai ficar menor que isso */
-            flex-shrink: 0; /* O SEGREDO AQUI: Impede o esmagamento */
-
+            height: 60px; /* Altura ideal para empilhar 3 na tela */
+            min-height: 60px;
+            flex-shrink: 0; /* Proíbe o navegador de esmagar as esteiras */
             background-color: var(--black);
             display: flex;
             align-items: center;
@@ -223,63 +190,46 @@
         }
 
         .ticker-badge {
-            background-color: var(--neon);
-            color: var(--black);
-            font-weight: 800;
-            width: 280px; /* Alargado para acomodar a nova fonte */
-            justify-content: center;
+            width: 240px;
             height: 100%;
             display: flex;
             align-items: center;
-            font-size: 24px; /* Aumentado de 20px para 24px */
-            z-index: 10;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
             text-transform: uppercase;
-            box-shadow: 10px 0 20px rgba(0,0,0,0.8);
+            z-index: 10;
             position: absolute;
             left: 0;
+            box-shadow: 10px 0 20px rgba(0,0,0,0.8);
         }
 
         .ticker {
-            padding-left: 320px; /* Afastado para não colar no selo maior */
+            padding-left: 260px;
             display: inline-block;
-            animation: ticker 90s linear infinite; /* Freio: Passamos de 45s para 90s */
-            font-size: 30px; /* Aumentado de 24px para 30px */
+            animation: ticker 75s linear infinite; /* Velocidade equilibrada */
+            font-size: 24px;
             color: var(--off-white);
         }
 
         .ticker span {
             color: var(--gold);
-            margin: 0 25px;
+            margin: 0 20px;
             font-weight: bold;
         }
 
-        .ticker-finance {
-            background-color: #111111;
-        }
+        .ticker-badge.agro { background-color: var(--neon); color: var(--black); }
 
-        .ticker-badge.finance {
-            background-color: var(--gold);
-            color: var(--black);
-        }
+        .ticker-finance { background-color: #111111; }
+        .ticker-badge.finance { background-color: var(--gold); color: var(--black); }
 
-        .ticker-agenda {
-            background-color: var(--black); 
-        }
-
-        .ticker-badge.agenda {
-            background-color: var(--off-white);
-            color: var(--black);
-        }
+        .ticker-agenda { background-color: var(--black); }
+        .ticker-badge.agenda { background-color: var(--off-white); color: var(--black); }
 
         @keyframes ticker {
-            0% {
-                transform: translateX(100vw);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-    </style>
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }    </style>
 </head>
 
 <body>
