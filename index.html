@@ -206,34 +206,29 @@
             color: var(--off-white);
         }
 
-        /* TICKER */
+       /* TICKER */
 
         .ticker-wrap {
-            height: 70px;
-
+            height: 95px; /* Aumentado de 70px para 95px */
             background-color: var(--black);
-
             display: flex;
             align-items: center;
-
             overflow: hidden;
             white-space: nowrap;
-
             position: relative;
+            border-top: 1px solid rgba(255,255,255,0.1); /* Linha divisória sutil */
         }
 
         .ticker-badge {
             background-color: var(--neon);
             color: var(--black);
             font-weight: 800;
-            
-            width: 240px; /* LARGURA FIXA PARA IGUALAR AS DUAS */
-            justify-content: center; /* CENTRALIZA O TEXTO DENTRO DA CAIXA */
-            
+            width: 280px; /* Alargado para acomodar a nova fonte */
+            justify-content: center;
             height: 100%;
             display: flex;
             align-items: center;
-            font-size: 20px;
+            font-size: 24px; /* Aumentado de 20px para 24px */
             z-index: 10;
             text-transform: uppercase;
             box-shadow: 10px 0 20px rgba(0,0,0,0.8);
@@ -242,25 +237,20 @@
         }
 
         .ticker {
-            padding-left: 300px;
-
+            padding-left: 320px; /* Afastado para não colar no selo maior */
             display: inline-block;
-
-            animation: ticker 45s linear infinite;
-
-            font-size: 24px;
-
+            animation: ticker 90s linear infinite; /* Freio: Passamos de 45s para 90s */
+            font-size: 30px; /* Aumentado de 24px para 30px */
             color: var(--off-white);
         }
 
         .ticker span {
             color: var(--gold);
-            margin: 0 20px;
+            margin: 0 25px;
             font-weight: bold;
         }
 
-		.ticker-finance {
-            border-top: 1px solid rgba(255,255,255,0.1);
+        .ticker-finance {
             background-color: #111111;
         }
 
@@ -269,9 +259,7 @@
             color: var(--black);
         }
 
-		/* CORES DA TERCEIRA ESTEIRA (COLE ESTE BLOCO AQUI) */
         .ticker-agenda {
-            border-top: 1px solid rgba(255,255,255,0.1);
             background-color: var(--black); 
         }
 
@@ -281,16 +269,13 @@
         }
 
         @keyframes ticker {
-
             0% {
                 transform: translateX(100vw);
             }
-
             100% {
                 transform: translateX(-100%);
             }
         }
-
     </style>
 </head>
 
