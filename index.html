@@ -215,23 +215,83 @@
         .ticker-badge.finance { background-color: var(--gold); color: var(--black); }
         .ticker-agenda { background-color: var(--black); }
         .ticker-badge.agenda { background-color: var(--off-white); color: var(--black); }
-        /* VELOCIDADES INDIVIDUAIS DAS ESTEIRAS */
+        /* VELOCIDADES INDIVIDUAIS DAS ESTEIRAS 
         #ticker-noticias {
-            animation-duration: 50s !important; /* Notícias tem tamanho médio/grande */
+            animation-duration: 50s !important; // Notícias tem tamanho médio/grande 
         }
 
         #ticker-finance {
-            animation-duration: 50s !important; /* Finanças é o texto mais curto, precisa de menos tempo */
+            animation-duration: 50s !important; // Finanças é o texto mais curto, precisa de menos tempo 
         }
 
         #ticker-agenda {
-            animation-duration: 300s !important; /* JACAD é gigante, precisa de muito tempo para ir devagar */
-        }
+            animation-duration: 300s !important; // JACAD é gigante, precisa de muito tempo para ir devagar 
+        }*/
 
         @keyframes ticker {
             0% { transform: translateX(100vw); }
             100% { transform: translateX(-100%); }
         }
+
+/* =========================================
+           RESPONSIVIDADE (TVs variadas, Tablets e Celulares)
+           ========================================= */
+
+        /* Telas Médias (Tablets horizontais ou TVs antigas) */
+        @media (max-width: 1200px) {
+            .content {
+                /* Muda de 4 colunas para 2 colunas */
+                grid-template-columns: repeat(2, 1fr);
+                padding: 15px 30px;
+            }
+            .header {
+                padding: 0 30px;
+            }
+        }
+
+        /* Telas Pequenas (Celulares e Tablets em pé) */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto; /* Permite rolar a tela no celular */
+            }
+            
+            .header {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .clock-container {
+                text-align: center;
+            }
+
+            .content {
+                /* Muda para 1 coluna empilhada */
+                grid-template-columns: 1fr;
+                padding: 15px;
+                overflow-y: auto;
+            }
+
+            .weather-card {
+                grid-column: span 1; /* O clima ocupava 2 espaços, agora ocupa 1 */
+            }
+
+            /* Ajustes nas Esteiras para não quebrar no mobile */
+            .ticker-badge {
+                width: 120px;
+                font-size: 12px;
+                padding: 0 5px;
+                text-align: center;
+            }
+
+            .ticker {
+                padding-left: 130px; /* Compensa a diminuição do badge */
+                font-size: 18px;
+            }
+        }
+
+        
     </style>
 </head>
 
@@ -485,9 +545,10 @@
         
         /* AGENDA */
         /* EVENTOS (VIA JACAD/PLANILHA) */
+        /* EVENTOS (VIA JACAD/PLANILHA) */
         async function atualizarAgenda() {
             try {
-                // COLOQUE O LINK CSV DA SUA PLANILHA AQUI DENTRO DAS ASPAS
+                // Lembrete: Confirme se a URL da sua planilha está correta aqui
                 const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime(); 
                 
                 const res = await fetch(urlCSV);
@@ -498,20 +559,17 @@
                 let textoTicker = '';
                 let temEvento = false;
 
-                // Começamos do 1 para pular o cabeçalho
+                // Monta o texto lendo as linhas da planilha
                 for (let i = 1; i < linhas.length; i++) {
                     if (linhas[i].trim() === '') continue;
                     
-                    // Lida com planilhas separadas por ponto-e-vírgula ou vírgula
                     const delimitador = linhas[i].includes(';') ? ';' : ',';
                     const colunas = linhas[i].split(delimitador);
                     
                     if (colunas.length >= 2) {
                         const dataEvento = colunas[0].trim();
-                        // Como a descrição pode ter vírgulas, pegamos o resto da linha se necessário
                         let detalhes = colunas[1].trim();
 
-                        // Se a data e os detalhes existirem, monta o letreiro
                         if (dataEvento && detalhes) {
                             textoTicker += `
                                 <span style="color: var(--neon); font-weight: 800; margin-left: 60px; font-size: 22px;">🗓️ ${dataEvento}</span>
@@ -522,8 +580,21 @@
                         }
                     }
                 }
+                
                 if(!temEvento) textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Nenhum evento programado no momento.</span>';
-                document.getElementById('ticker-agenda').innerHTML = textoTicker;
+                
+                const tickerDiv = document.getElementById('ticker-agenda');
+                tickerDiv.innerHTML = textoTicker;
+
+                // --- CÁLCULO MÁGICO DE VELOCIDADE DINÂMICA ---
+                // Espera um milissegundo para o navegador renderizar o texto e medir o tamanho
+                setTimeout(() => {
+                    const larguraTexto = tickerDiv.scrollWidth; 
+                    // 60 é a velocidade (pixels por segundo). Ajuste se achar muito rápido ou devagar.
+                    const tempoEmSegundos = larguraTexto / 60; 
+                    tickerDiv.style.animationDuration = tempoEmSegundos + 's';
+                }, 100);
+
             } catch(erro) {
                 console.error("Erro nos eventos:", erro);
                 document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando eventos...</span>';
