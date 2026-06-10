@@ -472,41 +472,49 @@
         }
         
         /* AGENDA */
+        /* EVENTOS (VIA JACAD/PLANILHA) */
         async function atualizarAgenda() {
             try {
-                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime();
+                // COLOQUE O LINK CSV DA SUA PLANILHA AQUI DENTRO DAS ASPAS
+                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime(); 
+                
                 const res = await fetch(urlCSV);
-                if (!res.ok) throw new Error("Erro ao acessar a agenda pública");
+                if (!res.ok) throw new Error("Erro ao acessar a planilha de eventos");
                 
                 const textoCSV = await res.text();
                 const linhas = textoCSV.split(/\r?\n/);
                 let textoTicker = '';
                 let temEvento = false;
 
+                // Começamos do 1 para pular o cabeçalho
                 for (let i = 1; i < linhas.length; i++) {
                     if (linhas[i].trim() === '') continue;
+                    
+                    // Lida com planilhas separadas por ponto-e-vírgula ou vírgula
                     const delimitador = linhas[i].includes(';') ? ';' : ',';
                     const colunas = linhas[i].split(delimitador);
                     
-                    if (colunas.length >= 3) {
-                        const sala = colunas[0].trim();
-                        const titulo = colunas[1].trim();
-                        const horario = colunas[2].trim();
-                        let tituloLimpo = titulo.replace(/^([A-ZÀ-Ú]+\s)+/, '').trim();
+                    if (colunas.length >= 2) {
+                        const dataEvento = colunas[0].trim();
+                        // Como a descrição pode ter vírgulas, pegamos o resto da linha se necessário
+                        let detalhes = colunas[1].trim();
 
-                        textoTicker += `
-                            <span style="color: var(--neon); font-weight: bold; margin-left: 60px;">${horario}</span>
-                            <span style="color: var(--gold); font-weight: 800; margin-left: 15px;">| ${sala} |</span>
-                            <span style="color: var(--off-white); margin-left: 15px;">${tituloLimpo}</span>
-                        `;
-                        temEvento = true;
+                        // Se a data e os detalhes existirem, monta o letreiro
+                        if (dataEvento && detalhes) {
+                            textoTicker += `
+                                <span style="color: var(--neon); font-weight: 800; margin-left: 60px; font-size: 22px;">🗓️ ${dataEvento}</span>
+                                <span style="color: var(--off-white); font-weight: 600; margin-left: 15px; font-size: 20px;">${detalhes}</span>
+                                <span style="color: var(--gold); font-weight: 800; margin-left: 20px;"> • </span>
+                            `;
+                            temEvento = true;
+                        }
                     }
                 }
-                if(!temEvento) textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Agenda sem eventos para hoje.</span>';
+                if(!temEvento) textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Nenhum evento programado no momento.</span>';
                 document.getElementById('ticker-agenda').innerHTML = textoTicker;
             } catch(erro) {
-                console.error("Erro na agenda:", erro);
-                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando com a agenda...</span>';
+                console.error("Erro nos eventos:", erro);
+                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando eventos...</span>';
             }
         } 
 
