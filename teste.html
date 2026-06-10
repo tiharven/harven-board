@@ -232,6 +232,66 @@
             0% { transform: translateX(100vw); }
             100% { transform: translateX(-100%); }
         }
+
+/* =========================================
+           RESPONSIVIDADE (TVs variadas, Tablets e Celulares)
+           ========================================= */
+
+        /* Telas Médias (Tablets horizontais ou TVs antigas) */
+        @media (max-width: 1200px) {
+            .content {
+                /* Muda de 4 colunas para 2 colunas */
+                grid-template-columns: repeat(2, 1fr);
+                padding: 15px 30px;
+            }
+            .header {
+                padding: 0 30px;
+            }
+        }
+
+        /* Telas Pequenas (Celulares e Tablets em pé) */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto; /* Permite rolar a tela no celular */
+            }
+            
+            .header {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .clock-container {
+                text-align: center;
+            }
+
+            .content {
+                /* Muda para 1 coluna empilhada */
+                grid-template-columns: 1fr;
+                padding: 15px;
+                overflow-y: auto;
+            }
+
+            .weather-card {
+                grid-column: span 1; /* O clima ocupava 2 espaços, agora ocupa 1 */
+            }
+
+            /* Ajustes nas Esteiras para não quebrar no mobile */
+            .ticker-badge {
+                width: 120px;
+                font-size: 12px;
+                padding: 0 5px;
+                text-align: center;
+            }
+
+            .ticker {
+                padding-left: 130px; /* Compensa a diminuição do badge */
+                font-size: 18px;
+            }
+        }
+
+        
     </style>
 </head>
 
