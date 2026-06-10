@@ -20,10 +20,11 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark-green);
             color: var(--off-white);
-            overflow: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            overflow-x: hidden; 
+            overflow-y: auto;   
         }
 
         /* HEADER */
@@ -42,6 +43,7 @@
         .logo {
             height: 55px;
             object-fit: contain;
+            cursor: pointer; /* Indica que é clicável para o fullscreen */
         }
 
         .title-container {
@@ -199,7 +201,8 @@
         .ticker {
             padding-left: 260px;
             display: inline-block;
-            animation: ticker 75s linear infinite;
+            /* A velocidade dinâmica será injetada via JS, deixamos 60s como fallback padrão */
+            animation: ticker 60s linear infinite; 
             font-size: 24px;
             color: var(--off-white);
         }
@@ -215,46 +218,26 @@
         .ticker-badge.finance { background-color: var(--gold); color: var(--black); }
         .ticker-agenda { background-color: var(--black); }
         .ticker-badge.agenda { background-color: var(--off-white); color: var(--black); }
-        /* VELOCIDADES INDIVIDUAIS DAS ESTEIRAS 
-        #ticker-noticias {
-            animation-duration: 50s !important; // Notícias tem tamanho médio/grande 
-        }
-
-        #ticker-finance {
-            animation-duration: 50s !important; // Finanças é o texto mais curto, precisa de menos tempo 
-        }
-
-        #ticker-agenda {
-            animation-duration: 300s !important; // JACAD é gigante, precisa de muito tempo para ir devagar 
-        }*/
 
         @keyframes ticker {
             0% { transform: translateX(100vw); }
             100% { transform: translateX(-100%); }
         }
 
-/* =========================================
-           RESPONSIVIDADE (TVs variadas, Tablets e Celulares)
+        /* =========================================
+           RESPONSIVIDADE BLINDADA (CELULAR E TELAS TOUCH)
            ========================================= */
 
-        /* Telas Médias (Tablets horizontais ou TVs antigas) */
-        @media (max-width: 1200px) {
+        /* Para Lousas Interativas e Telas com Zoom alto (1400px pra baixo) */
+        @media (max-width: 1400px) {
             .content {
-                /* Muda de 4 colunas para 2 colunas */
                 grid-template-columns: repeat(2, 1fr);
-                padding: 15px 30px;
-            }
-            .header {
-                padding: 0 30px;
+                grid-template-rows: auto;
             }
         }
 
-        /* Telas Pequenas (Celulares e Tablets em pé) */
+        /* Para Celulares e Tablets em pé (768px pra baixo) */
         @media (max-width: 768px) {
-            body {
-                overflow-y: auto; /* Permite rolar a tela no celular */
-            }
-            
             .header {
                 flex-direction: column;
                 height: auto;
@@ -262,43 +245,50 @@
                 gap: 15px;
             }
 
-            .clock-container {
-                text-align: center;
-            }
+            .logo { height: 40px; }
+            .title { font-size: 22px; }
+            .clock-container { text-align: center; }
+            .clock { font-size: 36px; }
 
             .content {
-                /* Muda para 1 coluna empilhada */
-                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
                 padding: 15px;
-                overflow-y: auto;
+                gap: 15px;
             }
 
-            .weather-card {
-                grid-column: span 1; /* O clima ocupava 2 espaços, agora ocupa 1 */
+            .card { min-height: 120px; }
+            .weather-card { padding: 20px; }
+
+            /* Ajustes vitais para as esteiras no celular */
+            .ticker-wrap {
+                flex-direction: column;
+                height: auto;
+                min-height: unset;
+                align-items: flex-start;
+                padding-bottom: 5px;
             }
 
-            /* Ajustes nas Esteiras para não quebrar no mobile */
             .ticker-badge {
-                width: 120px;
+                position: relative;
+                width: 100%;
+                height: 25px;
                 font-size: 12px;
-                padding: 0 5px;
-                text-align: center;
             }
 
             .ticker {
-                padding-left: 130px; /* Compensa a diminuição do badge */
-                font-size: 18px;
+                padding-left: 10px;
+                font-size: 16px;
+                margin-top: 5px;
             }
         }
-
-        
     </style>
 </head>
 
 <body>
 
     <div class="header">
-        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo">
+        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo" id="logo-fullscreen">
         <div class="title-container">
             <h1 class="title">HARVEN<span>BOARD</span></h1>
         </div>
@@ -395,9 +385,9 @@
     
     <!-- TERCEIRA ESTEIRA: AGENDA -->
     <div class="ticker-wrap ticker-agenda">
-        <div class="ticker-badge agenda">AGENDA HARVEN</div>
+        <div class="ticker-badge agenda">EVENTOS HARVEN</div>
         <div class="ticker" id="ticker-agenda">
-            Sincronizando salas do Outlook...
+            Sincronizando sistema acadêmico...
         </div>
     </div>
 
@@ -412,6 +402,17 @@
         }
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio();
+
+        /* FULLSCREEN MÁGICO VIA TOUCH */
+        document.getElementById('logo-fullscreen').addEventListener('dblclick', function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Erro ao tentar tela cheia: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
 
         /* MOEDAS */
         async function atualizarMoedas() {
@@ -445,7 +446,15 @@
                     dados.items.slice(0, 8).forEach(noticia => {
                         textoFinal += `${noticia.title.toUpperCase()} <span>|</span> `;
                     });
-                    document.getElementById('ticker-noticias').innerHTML = textoFinal;
+                    
+                    const tickerDiv = document.getElementById('ticker-noticias');
+                    tickerDiv.innerHTML = textoFinal;
+
+                    // Dinâmica de Velocidade (60 px/s)
+                    setTimeout(() => {
+                        const largura = tickerDiv.scrollWidth;
+                        tickerDiv.style.animationDuration = (largura / 60) + 's';
+                    }, 100);
                 }
             } catch(e) { console.error(e); }
         }
@@ -539,16 +548,22 @@
                         }
                     }
                 });
-                document.getElementById('ticker-finance').innerHTML = textoTicker;
+                
+                const tickerDiv = document.getElementById('ticker-finance');
+                tickerDiv.innerHTML = textoTicker;
+
+                // Dinâmica de Velocidade (60 px/s)
+                setTimeout(() => {
+                    const largura = tickerDiv.scrollWidth;
+                    tickerDiv.style.animationDuration = (largura / 60) + 's';
+                }, 100);
+
             } catch(erro) { console.error("Erro no ticker financeiro:", erro); }
         }
         
-        /* AGENDA */
-        /* EVENTOS (VIA JACAD/PLANILHA) */
-        /* EVENTOS (VIA JACAD/PLANILHA) */
+        /* AGENDA VIA JACAD/GOOGLE SHEETS */
         async function atualizarAgenda() {
             try {
-                // Lembrete: Confirme se a URL da sua planilha está correta aqui
                 const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime(); 
                 
                 const res = await fetch(urlCSV);
@@ -559,7 +574,6 @@
                 let textoTicker = '';
                 let temEvento = false;
 
-                // Monta o texto lendo as linhas da planilha
                 for (let i = 1; i < linhas.length; i++) {
                     if (linhas[i].trim() === '') continue;
                     
@@ -586,13 +600,10 @@
                 const tickerDiv = document.getElementById('ticker-agenda');
                 tickerDiv.innerHTML = textoTicker;
 
-                // --- CÁLCULO MÁGICO DE VELOCIDADE DINÂMICA ---
-                // Espera um milissegundo para o navegador renderizar o texto e medir o tamanho
+                // Dinâmica de Velocidade (60 px/s)
                 setTimeout(() => {
-                    const larguraTexto = tickerDiv.scrollWidth; 
-                    // 60 é a velocidade (pixels por segundo). Ajuste se achar muito rápido ou devagar.
-                    const tempoEmSegundos = larguraTexto / 60; 
-                    tickerDiv.style.animationDuration = tempoEmSegundos + 's';
+                    const largura = tickerDiv.scrollWidth;
+                    tickerDiv.style.animationDuration = (largura / 60) + 's';
                 }, 100);
 
             } catch(erro) {
