@@ -234,27 +234,19 @@
         }
 
 /* =========================================
-           RESPONSIVIDADE (TVs variadas, Tablets e Celulares)
+           RESPONSIVIDADE BLINDADA
            ========================================= */
 
-        /* Telas Médias (Tablets horizontais ou TVs antigas) */
-        @media (max-width: 1200px) {
+        /* Para Lousas Interativas e Telas com Zoom alto (1400px pra baixo) */
+        @media (max-width: 1400px) {
             .content {
-                /* Muda de 4 colunas para 2 colunas */
-                grid-template-columns: repeat(2, 1fr);
-                padding: 15px 30px;
-            }
-            .header {
-                padding: 0 30px;
+                grid-template-columns: repeat(2, 1fr); /* Muda de 4 para 2 colunas */
+                grid-template-rows: auto;
             }
         }
 
-        /* Telas Pequenas (Celulares e Tablets em pé) */
+        /* Para Celulares e Tablets em pé (768px pra baixo) */
         @media (max-width: 768px) {
-            body {
-                overflow-y: auto; /* Permite rolar a tela no celular */
-            }
-            
             .header {
                 flex-direction: column;
                 height: auto;
@@ -262,32 +254,41 @@
                 gap: 15px;
             }
 
-            .clock-container {
-                text-align: center;
-            }
+            .logo { height: 40px; }
+            .title { font-size: 22px; }
+            .clock-container { text-align: center; }
+            .clock { font-size: 36px; }
 
             .content {
-                /* Muda para 1 coluna empilhada */
-                grid-template-columns: 1fr;
+                display: flex; /* Flex empilha tudo no mobile */
+                flex-direction: column;
                 padding: 15px;
-                overflow-y: auto;
+                gap: 15px;
             }
 
-            .weather-card {
-                grid-column: span 1; /* O clima ocupava 2 espaços, agora ocupa 1 */
+            .card { min-height: 120px; }
+            .weather-card { padding: 20px; }
+
+            /* Ajustes vitais para as esteiras no celular */
+            .ticker-wrap {
+                flex-direction: column;
+                height: auto;
+                min-height: unset;
+                align-items: flex-start;
+                padding-bottom: 5px;
             }
 
-            /* Ajustes nas Esteiras para não quebrar no mobile */
             .ticker-badge {
-                width: 120px;
+                position: relative; /* Tira o badge da frente do texto */
+                width: 100%;
+                height: 25px;
                 font-size: 12px;
-                padding: 0 5px;
-                text-align: center;
             }
 
             .ticker {
-                padding-left: 130px; /* Compensa a diminuição do badge */
-                font-size: 18px;
+                padding-left: 10px; /* Tira a margem gigante da esquerda */
+                font-size: 16px;
+                margin-top: 5px;
             }
         }
 
@@ -298,7 +299,7 @@
 <body>
 
     <div class="header">
-        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo">
+        <img src="[https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png](https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png)" alt="Harven Logo" class="logo" id="logo-fullscreen" style="cursor: pointer;">
         <div class="title-container">
             <h1 class="title">HARVEN<span>BOARD</span></h1>
         </div>
@@ -542,6 +543,17 @@
                 document.getElementById('ticker-finance').innerHTML = textoTicker;
             } catch(erro) { console.error("Erro no ticker financeiro:", erro); }
         }
+
+/* FULLSCREEN MÁGICO VIA TOUCH */
+        document.getElementById('logo-fullscreen').addEventListener('dblclick', function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Erro ao tentar tela cheia: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
         
         /* AGENDA */
         /* EVENTOS (VIA JACAD/PLANILHA) */
