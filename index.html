@@ -459,18 +459,21 @@
             } catch(e) { console.error(e); }
         }
 
-        /* COMMODITIES */
+        /* COMMODITIES (BLINDADO COM TSV) */
         async function atualizarPlanilhaAgro() {
             try {
-                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=csv&t=' + new Date().getTime();
-                const res = await fetch(urlCSV);
-                const textoCSV = await res.text();
-                const linhas = textoCSV.split(/\r?\n/);
+                // 1. Mudamos o final da URL de output=csv para output=tsv
+                const urlTSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=tsv&t=' + new Date().getTime();
+                const res = await fetch(urlTSV);
+                const textoTSV = await res.text();
+                const linhas = textoTSV.split(/\r?\n/);
 
                 linhas.forEach((linha, index) => {
                     if(index === 0) return;
-                    const delimitador = linha.includes(';') ? ';' : ',';
-                    const colunas = linha.split(delimitador);
+                    
+                    // 2. Mudamos o delimitador para ler o TAB ('\t') invés de vírgula
+                    const colunas = linha.split('\t');
+                    
                     if(colunas.length >= 4) {
                         const nome = colunas[0].trim().toLowerCase();
                         const contrato = colunas[1].trim();
@@ -506,19 +509,22 @@
             } catch(erro) { console.error("Erro na planilha:", erro); }
         }
 
-        /* MERCADO FINANCEIRO */
+        /* MERCADO FINANCEIRO (BLINDADO COM TSV) */
         async function atualizarMercadoFinanceiro() {
             try {
-                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=csv&t=' + new Date().getTime();
-                const res = await fetch(urlCSV);
-                const textoCSV = await res.text();
-                const linhas = textoCSV.split(/\r?\n/);
+                // Trocado de output=csv para output=tsv
+                const urlTSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=tsv&t=' + new Date().getTime();
+                const res = await fetch(urlTSV);
+                const textoTSV = await res.text();
+                const linhas = textoTSV.split(/\r?\n/);
                 let textoTicker = '';
 
                 linhas.forEach((linha, index) => {
                     if(index === 0) return;
-                    const delimitador = linha.includes(';') ? ';' : ',';
-                    const colunas = linha.split(delimitador);
+                    
+                    // Agora dividimos as colunas usando TAB (\t) em vez de vírgulas
+                    const colunas = linha.split('\t');
+                    
                     if(colunas.length >= 2) {
                         const nome = colunas[0].trim().toUpperCase();
                         let valorStr = colunas[1] ? colunas[1].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
@@ -550,13 +556,15 @@
                 });
                 
                 const tickerDiv = document.getElementById('ticker-finance');
-                tickerDiv.innerHTML = textoTicker;
+                if(tickerDiv) {
+                    tickerDiv.innerHTML = textoTicker;
 
-                // Dinâmica de Velocidade (60 px/s)
-                setTimeout(() => {
-                    const largura = tickerDiv.scrollWidth;
-                    tickerDiv.style.animationDuration = (largura / 60) + 's';
-                }, 100);
+                    // Dinâmica de Velocidade
+                    setTimeout(() => {
+                        const largura = tickerDiv.scrollWidth;
+                        tickerDiv.style.animationDuration = (largura / 60) + 's';
+                    }, 100);
+                }
 
             } catch(erro) { console.error("Erro no ticker financeiro:", erro); }
         }
