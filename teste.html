@@ -25,7 +25,7 @@
 
 *{margin:0;padding:0;box-sizing:border-box}
 
-html,body{height:100%}
+html{font-size:16px}
 body{
     font-family:'Space Grotesk',sans-serif;
     background:
@@ -33,10 +33,9 @@ body{
         radial-gradient(90% 70% at 0% 110%, rgba(198,93,52,0.12), transparent 50%),
         var(--soil);
     color:var(--cream);
-    height:100vh;
-    overflow:hidden;
-    display:grid;
-    grid-template-rows:auto 1fr auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
     position:relative;
 }
 
@@ -90,15 +89,16 @@ body::after{
 
 /* ============ CORPO — grade orgânica ============ */
 .field{
-    padding:22px 40px;
+    flex:1;
+    padding:20px 40px;
     display:grid;
     grid-template-columns:1.1fr 1.1fr 1.4fr;
     grid-template-rows:auto auto;
     gap:18px;
     position:relative;z-index:2;
-    min-height:0;
-    align-content:stretch;
 }
+.field .plot{min-height:230px}
+.field .harvest{min-height:200px}
 
 /* cartão base — "placa de campo" */
 .plot{
@@ -110,6 +110,7 @@ body::after{
     overflow:hidden;
     display:flex;flex-direction:column;
     min-width:0;
+    min-height:0;
 }
 /* etiqueta canto — número de talhão */
 .plot .stamp{
@@ -128,15 +129,15 @@ body::after{
 }
 
 /* -- CÂMBIO: dois grandes números lado a lado -- */
-.money{grid-column:1;grid-row:1}
-.money .rows{display:flex;flex-direction:column;justify-content:space-around;flex:1;padding:6px 0}
+.money{grid-column:1;grid-row:1;padding-top:16px;padding-bottom:16px}
+.money .rows{display:flex;flex-direction:column;justify-content:space-around;flex:1;padding:2px 0}
 .money .fx{display:flex;align-items:baseline;justify-content:space-between;
-    border-bottom:1px dashed var(--line);padding-bottom:22px;padding-top:8px}
+    border-bottom:1px dashed var(--line);padding-bottom:14px;padding-top:4px}
 .money .fx:last-child{border-bottom:0;padding-bottom:0}
-.money .fx .name{font-family:'Fraunces',serif;font-size:22px;color:var(--cream);font-weight:600}
+.money .fx .name{font-family:'Fraunces',serif;font-size:20px;color:var(--cream);font-weight:600}
 .money .fx .name span{display:block;font-family:'Space Mono',monospace;font-size:9px;
-    letter-spacing:2px;color:var(--leaf-dim);margin-top:3px}
-.money .fx .val{font-family:'Fraunces',serif;font-size:46px;font-weight:900;
+    letter-spacing:2px;color:var(--leaf-dim);margin-top:2px}
+.money .fx .val{font-family:'Fraunces',serif;font-size:clamp(30px,3.4vw,44px);font-weight:900;
     color:var(--wheat);letter-spacing:-1px;line-height:0.9}
 
 /* -- CLIMA + VÍDEO: bloco largo -- */
@@ -172,25 +173,26 @@ body::after{
     margin-top:4px;
 }
 .crop{
-    padding:6px 20px;
+    padding:4px 18px;
     border-left:1px solid var(--line);
     display:flex;flex-direction:column;justify-content:center;
     position:relative;
 }
 .crop:first-child{border-left:0;padding-left:4px}
 .crop .cname{
-    font-family:'Fraunces',serif;font-size:22px;font-weight:900;
+    font-family:'Fraunces',serif;font-size:20px;font-weight:900;
     color:var(--cream);display:flex;align-items:baseline;gap:8px;
 }
 .crop .cname .contract{font-family:'Space Mono',monospace;font-size:9px;
     font-weight:400;color:var(--leaf-dim);letter-spacing:1px}
-.crop .tier{margin-top:8px}
+.crop .tier{margin-top:6px}
 .crop .tier .t-label{font-family:'Space Mono',monospace;font-size:8px;
     letter-spacing:1.5px;color:var(--cream-dim);opacity:0.6;text-transform:uppercase}
 .crop .tier .t-val{font-family:'Space Grotesk',sans-serif;font-weight:700;
-    font-size:26px;color:var(--wheat);line-height:1.05}
-.crop .tier.physical .t-val{font-size:20px;color:var(--cream)}
-.crop .chg{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;margin-top:2px}
+    font-size:23px;color:var(--wheat);line-height:1.05}
+.crop .tier.physical{margin-top:6px}
+.crop .tier.physical .t-val{font-size:18px;color:var(--cream)}
+.crop .chg{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;margin-top:1px}
 .up{color:var(--leaf)}
 .down{color:var(--clay)}
 .flat{color:var(--cream-dim)}
@@ -218,20 +220,22 @@ body::after{
     padding-left:40px;gap:10px;
     font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
     letter-spacing:2px;text-transform:uppercase;
-    position:relative;z-index:5;
+    position:relative;z-index:6;
+    background:var(--ink);
 }
 .furrow .seal .dot{width:8px;height:8px;border-radius:50%}
 .f-agro .seal{color:var(--leaf)}          .f-agro .seal .dot{background:var(--leaf)}
 .f-market .seal{color:var(--wheat)}       .f-market .seal .dot{background:var(--wheat)}
 .f-events .seal{color:var(--clay)}         .f-events .seal .dot{background:var(--clay)}
 .furrow .flow{display:inline-block;font-family:'Space Grotesk';font-size:17px;
-    color:var(--cream-dim);animation:drift 60s linear infinite;padding-left:20px}
+    color:var(--cream-dim);animation:drift 60s linear infinite;padding-left:20px;
+    position:relative;z-index:1}
 .furrow .flow span{color:var(--wheat);margin:0 14px}
 @keyframes drift{0%{transform:translateX(60vw)}100%{transform:translateX(-100%)}}
 
-/* leve gradiente pra "sumir" o texto sob o selo */
-.furrow::before{content:"";position:absolute;left:200px;top:0;bottom:0;width:60px;
-    background:linear-gradient(90deg, rgba(26,18,12,0.9), transparent);z-index:4}
+/* degradê que "engole" o texto ao chegar no selo */
+.furrow::before{content:"";position:absolute;left:200px;top:0;bottom:0;width:70px;
+    background:linear-gradient(90deg, var(--ink), transparent);z-index:5}
 
 @media (prefers-reduced-motion: reduce){
     .furrow .flow{animation:none}
@@ -419,49 +423,56 @@ async function atualizarPlanilhaAgro(){
         const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=tsv&t='+Date.now();
         const r=await fetch(url);const txt=await r.text();
         const linhas=txt.split(/\r?\n/);
-        const dados={}; // nome -> {contrato, valor, var}
+        const dados={}; // nome -> {contrato, valor, chg}
         linhas.forEach((l,i)=>{
             if(i===0)return;
             const c=l.split('\t');
-            if(c.length>=4){
+            if(c.length>=3){                       // aceita 3+ colunas (físico às vezes vem sem var)
                 const nome=c[0].trim().toLowerCase();
-                const contrato=c[1].trim();
-                let v=parseFloat(c[2].replace(/[^\d,\.-]/g,'').replace(',','.'));
-                let ch=parseFloat(c[3].replace(/[^\d,\.-]/g,'').replace(',','.'));
+                if(!nome)return;
+                const contrato=(c[1]||'').trim();
+                let v=parseFloat((c[2]||'').replace(/[^\d,\.-]/g,'').replace(',','.'));
+                let ch=parseFloat((c[3]||'0').replace(/[^\d,\.-]/g,'').replace(',','.'));
                 if(isNaN(ch)||Math.abs(ch)>30)ch=0; // trava de sanidade
                 if(!isNaN(v)&&v>0)dados[nome]={contrato,valor:v,chg:ch};
             }
         });
 
-        // monta os 4 talhões com futuro + físico
         const wrap=document.getElementById('crops');
+        const fmt=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         let html='';
         let maiorMov={nome:'',abs:0,chg:0};
+
         ORDER.forEach(key=>{
             const fut=dados[key], fis=dados[key+'_fisico'];
-            if(!fut)return;
+            if(!fut && !fis)return;               // só pula se não tiver NADA daquela cultura
             const meta=CROP_META[key];
-            const fmt=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-            const setaCls=fut.chg>0?'up':(fut.chg<0?'down':'flat');
-            const seta=fut.chg>0?'▲':(fut.chg<0?'▼':'◆');
-            if(Math.abs(fut.chg)>maiorMov.abs){maiorMov={nome:meta.nome,abs:Math.abs(fut.chg),chg:fut.chg};}
-            html+=`<div class="crop">
-                <div class="cname">${meta.nome}<span class="contract">${fut.contrato}</span></div>
-                <div class="tier future">
+            html+=`<div class="crop"><div class="cname">${meta.nome}`;
+            if(fut && fut.contrato)html+=`<span class="contract">${fut.contrato}</span>`;
+            html+=`</div>`;
+
+            if(fut){
+                const cls=fut.chg>0?'up':(fut.chg<0?'down':'flat');
+                const seta=fut.chg>0?'▲':(fut.chg<0?'▼':'◆');
+                if(Math.abs(fut.chg)>maiorMov.abs)maiorMov={nome:meta.nome,abs:Math.abs(fut.chg),chg:fut.chg};
+                html+=`<div class="tier future">
                     <div class="t-label">Futuro · B3</div>
                     <div class="t-val">${meta.moeda} ${fmt(fut.valor)}</div>
-                    <div class="chg ${setaCls}">${seta} ${fut.chg.toFixed(2)}%</div>
+                    <div class="chg ${cls}">${seta} ${fut.chg.toFixed(2)}%</div>
                 </div>`;
+            }
             if(fis){
-                const fCls=fis.chg>0?'up':(fis.chg<0?'down':'flat');
-                const fSeta=fis.chg>0?'▲':(fis.chg<0?'▼':'◆');
+                const cls=fis.chg>0?'up':(fis.chg<0?'down':'flat');
+                const seta=fis.chg>0?'▲':(fis.chg<0?'▼':'◆');
                 html+=`<div class="tier physical">
                     <div class="t-label">Físico · CEPEA</div>
-                    <div class="t-val">R$ ${fmt(fis.valor)} <span class="chg ${fCls}" style="font-size:10px">${fSeta}${fis.chg.toFixed(2)}%</span></div>
+                    <div class="t-val">R$ ${fmt(fis.valor)} <span class="chg ${cls}" style="font-size:10px">${seta}${fis.chg.toFixed(2)}%</span></div>
                 </div>`;
             }
             html+=`</div>`;
         });
+
+        if(!html)html='<div class="crop" style="grid-column:1/-1;color:var(--cream-dim)">Sincronizando cotações…</div>';
         wrap.innerHTML=html;
 
         // Pulso do dia
