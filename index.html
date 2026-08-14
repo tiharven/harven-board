@@ -392,6 +392,42 @@
     </div>
 
     <script>
+/* ============================================================
+   WAKE LOCK — impede a tela de apagar por inatividade
+   (mesmo princípio que um vídeo do YouTube usa)
+   ============================================================ */
+let wakeLock = null;
+
+async function manterTelaLigada() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock ativo — tela não vai apagar.');
+
+      // Se o lock cair sozinho, tenta reativar
+      wakeLock.addEventListener('release', () => {
+        console.log('Wake Lock liberado.');
+      });
+    } else {
+      console.warn('Wake Lock não suportado neste navegador.');
+    }
+  } catch (err) {
+    console.error('Falha ao ativar Wake Lock:', err.name, err.message);
+  }
+}
+
+// O lock é perdido quando a aba sai de foco (ex.: minimiza) ou a tela apaga
+// uma vez. Reativa automaticamente quando a página volta a ficar visível.
+document.addEventListener('visibilitychange', () => {
+  if (wakeLock === null && document.visibilityState === 'visible') {
+    manterTelaLigada();
+  }
+});
+
+// Ativa assim que a página carrega
+manterTelaLigada();
+
+        
         /* RELÓGIO */
         function atualizarRelogio() {
             const agora = new Date();
