@@ -1,675 +1,545 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Painel Agro - Harven</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarvenBoard · Estação de Campo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    /* Paleta "fim de tarde no cerrado" — terra, safra, brasa, folha seca */
+    --soil:      #2a1e16;   /* terra úmida escura (fundo base) */
+    --soil-2:    #3a2a1d;   /* terra levemente mais clara */
+    --clay:      #c65d34;   /* brasa / cerâmica */
+    --wheat:     #e8b84b;   /* trigo maduro / sol baixo */
+    --leaf:      #7a9b4e;   /* folha viva */
+    --leaf-dim:  #5c7a3a;   /* folha na sombra */
+    --cream:     #f3e9d6;   /* papel de almanaque */
+    --cream-dim: #c9bBa4;
+    --rust:      #a8412a;   /* ferrugem / queda */
+    --ink:       #1a120c;   /* tinta quase preta */
+    --line:      rgba(243,233,214,0.14);
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+*{margin:0;padding:0;box-sizing:border-box}
 
-    <style>
-        :root {
-            --bg-dark-green: #1c2d1b;
-            --black: #000000;
-            --neon: #d2ff00;
-            --off-white: #f5f5f0;
-            --gold: #c0ac6f;
-        }
+html,body{height:100%}
+body{
+    font-family:'Space Grotesk',sans-serif;
+    background:
+        radial-gradient(120% 80% at 85% -10%, rgba(232,184,75,0.10), transparent 55%),
+        radial-gradient(90% 70% at 0% 110%, rgba(198,93,52,0.12), transparent 50%),
+        var(--soil);
+    color:var(--cream);
+    height:100vh;
+    overflow:hidden;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    position:relative;
+}
 
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark-green);
-            color: var(--off-white);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden; 
-            overflow-y: auto;   
-        }
+/* textura de grão sutil, como papel/terra */
+body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:1;
+    opacity:0.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-        /* HEADER */
-        .header {
-            background-color: var(--black);
-            height: 110px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 50px;
-            border-bottom: 4px solid var(--neon);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
+/* ============ CABEÇALHO — faixa de horizonte ============ */
+.horizon{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 40px;
+    background:linear-gradient(180deg, rgba(26,18,12,0.9), rgba(26,18,12,0.55));
+    border-bottom:1px solid var(--line);
+    position:relative;z-index:3;
+}
+.brand{display:flex;align-items:baseline;gap:16px;cursor:pointer}
+.brand .mark{
+    font-family:'Fraunces',serif;
+    font-weight:900;font-size:34px;letter-spacing:-1px;
+    color:var(--cream);line-height:1;
+}
+.brand .mark em{color:var(--wheat);font-style:normal}
+.brand .tag{
+    font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--clay);
+}
+.almanac{
+    text-align:center;flex:1;
+}
+.almanac .kicker{
+    font-family:'Space Mono',monospace;
+    font-size:10px;letter-spacing:5px;text-transform:uppercase;
+    color:var(--cream-dim);
+}
+.almanac .season{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+    font-size:18px;color:var(--leaf);margin-top:2px;
+}
+.timekeep{text-align:right;font-family:'Space Mono',monospace}
+.timekeep .hh{
+    font-size:38px;font-weight:700;color:var(--wheat);line-height:1;
+    letter-spacing:1px;
+}
+.timekeep .dd{font-size:12px;color:var(--cream-dim);text-transform:capitalize;margin-top:3px}
+.timekeep .sync{font-size:9px;color:var(--leaf-dim);letter-spacing:1px;margin-top:2px}
 
-        .logo {
-            height: 55px;
-            object-fit: contain;
-            cursor: pointer; /* Indica que é clicável para o fullscreen */
-        }
+/* ============ CORPO — grade orgânica ============ */
+.field{
+    padding:22px 40px;
+    display:grid;
+    grid-template-columns:1.1fr 1.1fr 1.4fr;
+    grid-template-rows:auto auto;
+    gap:18px;
+    position:relative;z-index:2;
+    min-height:0;
+    align-content:stretch;
+}
 
-        .title-container {
-            text-align: center;
-        }
+/* cartão base — "placa de campo" */
+.plot{
+    background:linear-gradient(160deg, rgba(58,42,29,0.85), rgba(26,18,12,0.7));
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:20px 22px;
+    position:relative;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    min-width:0;
+}
+/* etiqueta canto — número de talhão */
+.plot .stamp{
+    position:absolute;top:14px;right:16px;
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:2px;color:var(--cream-dim);opacity:0.5;
+}
+.plot .label{
+    font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--clay);margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+}
+.plot .label::before{
+    content:"";width:22px;height:2px;background:var(--clay);
+}
 
-        .title {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin: 0;
-        }
+/* -- CÂMBIO: dois grandes números lado a lado -- */
+.money{grid-column:1;grid-row:1}
+.money .rows{display:flex;flex-direction:column;justify-content:space-around;flex:1;padding:6px 0}
+.money .fx{display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:1px dashed var(--line);padding-bottom:22px;padding-top:8px}
+.money .fx:last-child{border-bottom:0;padding-bottom:0}
+.money .fx .name{font-family:'Fraunces',serif;font-size:22px;color:var(--cream);font-weight:600}
+.money .fx .name span{display:block;font-family:'Space Mono',monospace;font-size:9px;
+    letter-spacing:2px;color:var(--leaf-dim);margin-top:3px}
+.money .fx .val{font-family:'Fraunces',serif;font-size:46px;font-weight:900;
+    color:var(--wheat);letter-spacing:-1px;line-height:0.9}
 
-        .title span {
-            color: var(--neon);
-        }
+/* -- CLIMA + VÍDEO: bloco largo -- */
+.sky{grid-column:3;grid-row:1;flex-direction:row;gap:0;padding:0}
+.sky .weather{
+    flex:0 0 40%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:20px;
+    background:linear-gradient(180deg, rgba(122,155,78,0.12), transparent);
+    border-right:1px solid var(--line);
+}
+.sky .place{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;
+    text-transform:uppercase;color:var(--leaf);margin-bottom:6px;text-align:center}
+.sky .temp{font-family:'Fraunces',serif;font-size:64px;font-weight:900;
+    color:var(--cream);line-height:0.9;letter-spacing:-2px}
+.sky .ico{font-size:40px;margin-top:8px}
+.sky .screen{flex:1;position:relative;overflow:hidden;display:flex;
+    align-items:center;justify-content:center;padding:14px;
+    background:radial-gradient(circle at 50% 40%, rgba(232,184,75,0.06), transparent 70%)}
+.sky .screen::after{content:"AO VIVO · CAMPO";position:absolute;bottom:18px;left:20px;
+    font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;
+    color:var(--wheat);opacity:0.7;z-index:2;
+    background:rgba(26,18,12,0.6);padding:2px 6px;border-radius:2px}
+.sky .screen iframe{width:100%;aspect-ratio:16/9;max-height:100%;
+    border:1px solid var(--line);border-radius:3px;pointer-events:none;
+    box-shadow:0 10px 34px rgba(0,0,0,0.5)}
 
-        .clock-container {
-            text-align: right;
-        }
+/* -- COMMODITIES: o coração, ocupa faixa inteira embaixo -- */
+.harvest{grid-column:1 / -1;grid-row:2}
+.harvest .label{color:var(--wheat)}
+.harvest .label::before{background:var(--wheat)}
+.crops{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;flex:1;
+    margin-top:4px;
+}
+.crop{
+    padding:6px 20px;
+    border-left:1px solid var(--line);
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;
+}
+.crop:first-child{border-left:0;padding-left:4px}
+.crop .cname{
+    font-family:'Fraunces',serif;font-size:22px;font-weight:900;
+    color:var(--cream);display:flex;align-items:baseline;gap:8px;
+}
+.crop .cname .contract{font-family:'Space Mono',monospace;font-size:9px;
+    font-weight:400;color:var(--leaf-dim);letter-spacing:1px}
+.crop .tier{margin-top:8px}
+.crop .tier .t-label{font-family:'Space Mono',monospace;font-size:8px;
+    letter-spacing:1.5px;color:var(--cream-dim);opacity:0.6;text-transform:uppercase}
+.crop .tier .t-val{font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:26px;color:var(--wheat);line-height:1.05}
+.crop .tier.physical .t-val{font-size:20px;color:var(--cream)}
+.crop .chg{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;margin-top:2px}
+.up{color:var(--leaf)}
+.down{color:var(--clay)}
+.flat{color:var(--cream-dim)}
 
-        .clock {
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--gold);
-            line-height: 1;
-        }
+/* -- coluna do meio superior: um "diário" com nada? não: reuso p/ destaque -- */
+/* Card do meio-cima vira o "termômetro do dia" — maior variação */
+.pulse{grid-column:2;grid-row:1;justify-content:center}
+.pulse .big{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(40px,5vw,66px);
+    line-height:0.88;letter-spacing:-2px;color:var(--cream)}
+.pulse .big .unit{font-size:24px;color:var(--cream-dim)}
+.pulse .sub{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;
+    color:var(--cream-dim);margin-top:10px;text-transform:uppercase}
+.pulse .mover{margin-top:14px;font-family:'Fraunces',serif;font-style:italic;
+    font-size:18px;color:var(--wheat)}
+.pulse .mover b{font-style:normal;font-weight:900}
 
-        .date {
-            font-size: 16px;
-            color: var(--off-white);
-            opacity: 0.8;
-            text-transform: capitalize;
-        }
+/* ============ RODAPÉ — três sulcos de esteira ============ */
+.furrows{position:relative;z-index:3;border-top:1px solid var(--line);
+    background:rgba(26,18,12,0.75)}
+.furrow{display:flex;align-items:center;height:44px;overflow:hidden;
+    white-space:nowrap;border-bottom:1px solid var(--line);position:relative}
+.furrow:last-child{border-bottom:0}
+.furrow .seal{
+    flex:0 0 200px;height:100%;display:flex;align-items:center;
+    padding-left:40px;gap:10px;
+    font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+    letter-spacing:2px;text-transform:uppercase;
+    position:relative;z-index:5;
+}
+.furrow .seal .dot{width:8px;height:8px;border-radius:50%}
+.f-agro .seal{color:var(--leaf)}          .f-agro .seal .dot{background:var(--leaf)}
+.f-market .seal{color:var(--wheat)}       .f-market .seal .dot{background:var(--wheat)}
+.f-events .seal{color:var(--clay)}         .f-events .seal .dot{background:var(--clay)}
+.furrow .flow{display:inline-block;font-family:'Space Grotesk';font-size:17px;
+    color:var(--cream-dim);animation:drift 60s linear infinite;padding-left:20px}
+.furrow .flow span{color:var(--wheat);margin:0 14px}
+@keyframes drift{0%{transform:translateX(60vw)}100%{transform:translateX(-100%)}}
 
-        #ultima-atualizacao {
-            font-size: 12px;
-            opacity: 0.6;
-            margin-top: 6px;
-        }
+/* leve gradiente pra "sumir" o texto sob o selo */
+.furrow::before{content:"";position:absolute;left:200px;top:0;bottom:0;width:60px;
+    background:linear-gradient(90deg, rgba(26,18,12,0.9), transparent);z-index:4}
 
-        /* CONTENT */
-        .content {
-            flex: 1;
-            padding: 15px 50px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 15px;
-            min-height: 0;
-        }
-
-        .card {
-            background-color: var(--black);
-            border-radius: 16px;
-            padding: 15px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.05);
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 8px;
-            height: 100%;
-            border-top-left-radius: 16px;
-            border-bottom-left-radius: 16px;
-        }
-
-        .card.neon::before { background-color: var(--neon); }
-        .card.gold::before { background-color: var(--gold); }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--off-white);
-            margin-bottom: 8px;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .card.neon .card-value { color: var(--neon); }
-        .card.gold .card-value { color: var(--gold); }
-
-        /* WEATHER + VÍDEO INSTITUCIONAL */
-        .weather-card {
-            grid-column: span 2;
-            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(28,45,27,0.8) 100%);
-            flex-direction: row;
-            align-items: stretch;
-            justify-content: stretch;
-            border: 1px solid var(--neon);
-            padding: 0;
-        }
-
-        .weather-info {
-            flex: 0 0 38%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-        }
-
-        .weather-city {
-            font-size: 18px;
-            color: var(--gold);
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .weather-temp {
-            font-size: 44px;
-            font-weight: 800;
-            color: var(--off-white);
-        }
-
-        .weather-video {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border-left: 1px solid rgba(255,255,255,0.15);
-            min-width: 0;
-        }
-
-        .weather-video iframe {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            max-height: 100%;
-            border: 0;
-            border-radius: 10px;
-            pointer-events: none;
-        }
-
-        /* TICKER E ESTEIRAS */
-        .ticker-wrap {
-            height: 60px;
-            min-height: 60px;
-            flex-shrink: 0;
-            background-color: var(--black);
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .ticker-badge {
-            width: 240px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 800;
-            text-transform: uppercase;
-            z-index: 10;
-            position: absolute;
-            left: 0;
-            box-shadow: 10px 0 20px rgba(0,0,0,0.8);
-        }
-
-        .ticker {
-            padding-left: 260px;
-            display: inline-block;
-            /* A velocidade dinâmica será injetada via JS, deixamos 60s como fallback padrão */
-            animation: ticker 60s linear infinite; 
-            font-size: 24px;
-            color: var(--off-white);
-        }
-
-        .ticker span {
-            color: var(--gold);
-            margin: 0 20px;
-            font-weight: bold;
-        }
-
-        .ticker-badge.agro { background-color: var(--neon); color: var(--black); }
-        .ticker-finance { background-color: #111111; }
-        .ticker-badge.finance { background-color: var(--gold); color: var(--black); }
-        .ticker-agenda { background-color: var(--black); }
-        .ticker-badge.agenda { background-color: var(--off-white); color: var(--black); }
-
-        @keyframes ticker {
-            0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* =========================================
-           RESPONSIVIDADE BLINDADA (CELULAR E TELAS TOUCH)
-           ========================================= */
-
-        /* Para Lousas Interativas e Telas com Zoom alto (1400px pra baixo) */
-        @media (max-width: 1400px) {
-            .content {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: auto;
-            }
-        }
-
-        /* Para Celulares e Tablets em pé (768px pra baixo) */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                height: auto;
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .logo { height: 40px; }
-            .title { font-size: 22px; }
-            .clock-container { text-align: center; }
-            .clock { font-size: 36px; }
-
-            .content {
-                display: flex;
-                flex-direction: column;
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .card { min-height: 120px; }
-            .weather-card { padding: 20px; }
-
-            /* Ajustes vitais para as esteiras no celular */
-            .ticker-wrap {
-                flex-direction: column;
-                height: auto;
-                min-height: unset;
-                align-items: flex-start;
-                padding-bottom: 5px;
-            }
-
-            .ticker-badge {
-                position: relative;
-                width: 100%;
-                height: 25px;
-                font-size: 12px;
-            }
-
-            .ticker {
-                padding-left: 10px;
-                font-size: 16px;
-                margin-top: 5px;
-            }
-        }
-    </style>
+@media (prefers-reduced-motion: reduce){
+    .furrow .flow{animation:none}
+}
+</style>
 </head>
-
 <body>
 
-    <div class="header">
-        <img src="https://i.ibb.co/KJG41hK/HARVEN-BRAND-3-A.png" alt="Harven Logo" class="logo" id="logo-fullscreen">
-        <div class="title-container">
-            <h1 class="title">HARVEN<span>BOARD</span></h1>
-        </div>
-        <div class="clock-container">
-            <div class="clock" id="relogio">00:00</div>
-            <div class="date" id="data">Carregando data...</div>
-            <div id="ultima-atualizacao">Atualizando...</div>
-        </div>
+<!-- HORIZONTE -->
+<header class="horizon">
+    <div class="brand" id="brand">
+        <div class="mark">Harven<em>·</em>Board</div>
+        <div class="tag">Estação de Campo</div>
     </div>
-
-    <div class="content">
-        <div class="card neon">
-            <div class="card-title">Dólar (USD)</div>
-            <div class="card-value" id="dolar">R$ --</div>
-        </div>
-
-        <div class="card neon">
-            <div class="card-title">Euro (EUR)</div>
-            <div class="card-value" id="euro">R$ --</div>
-        </div>
-
-        <div class="card gold">
-            <div class="card-title">Soja</div>
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
-                <div class="card-value" id="soja">--</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
-                <div class="card-value" id="soja_fisico">--</div>
-            </div>
-        </div>
-
-        <div class="card gold">
-            <div class="card-title">Milho</div>
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
-                <div class="card-value" id="milho">--</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
-                <div class="card-value" id="milho_fisico">--</div>
-            </div>
-        </div>
-
-        <div class="card gold">
-            <div class="card-title">Café</div>
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
-                <div class="card-value" id="cafe">--</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
-                <div class="card-value" id="cafe_fisico">--</div>
-            </div>
-        </div>
-
-        <div class="card gold">
-            <div class="card-title">Boi Gordo</div>
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px;">
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FUTURO (B3)</div>
-                <div class="card-value" id="boi">--</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: var(--gold); opacity: 0.8; letter-spacing: 1px;">MERCADO FÍSICO (CEPEA)</div>
-                <div class="card-value" id="boi_fisico">--</div>
-            </div>
-        </div>
-
-        <div class="card weather-card">
-            <div class="weather-info">
-                <div class="weather-city">Ribeirão Preto / SP</div>
-                <div class="weather-temp" id="temp">--°C</div>
-                <div style="font-size:38px; margin-top:8px;">🌤️</div>
-            </div>
-            <div class="weather-video">
-                <iframe
-                    src="https://www.youtube.com/embed/4cW5KJfW9mE?autoplay=1&mute=1&loop=1&playlist=4cW5KJfW9mE&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&cc_load_policy=0"
-                    allow="autoplay; encrypted-media"
-                    referrerpolicy="strict-origin-when-cross-origin">
-                </iframe>
-            </div>
-        </div>
-    </div> 
-
-    <!-- PRIMEIRA ESTEIRA: GIRO DO AGRO -->
-    <div class="ticker-wrap">
-        <div class="ticker-badge agro">GIRO DO AGRO</div>
-        <div class="ticker" id="ticker-noticias">
-            Buscando últimas notícias...
-        </div>
+    <div class="almanac">
+        <div class="kicker">Almanaque do Agronegócio</div>
+        <div class="season" id="season">— safra em curso —</div>
     </div>
-
-    <!-- SEGUNDA ESTEIRA: MERCADOS -->
-    <div class="ticker-wrap ticker-finance">
-        <div class="ticker-badge finance">MERCADOS</div>
-        <div class="ticker" id="ticker-finance">
-            Carregando cotações da B3 e Global...
-        </div>
-    </div> 
-    
-    <!-- TERCEIRA ESTEIRA: AGENDA -->
-    <div class="ticker-wrap ticker-agenda">
-        <div class="ticker-badge agenda">EVENTOS HARVEN</div>
-        <div class="ticker" id="ticker-agenda">
-            Sincronizando sistema acadêmico...
-        </div>
+    <div class="timekeep">
+        <div class="hh" id="relogio">00:00</div>
+        <div class="dd" id="data">carregando…</div>
+        <div class="sync" id="ultima-atualizacao">sincronizando</div>
     </div>
+</header>
 
-    <script>
-        /* RELÓGIO */
-        function atualizarRelogio() {
-            const agora = new Date();
-            document.getElementById('relogio').innerText =
-                String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
-            document.getElementById('data').innerText =
-                agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+<!-- CAMPO -->
+<main class="field">
+
+    <!-- CÂMBIO -->
+    <section class="plot money">
+        <div class="stamp">T·01</div>
+        <div class="label">Câmbio</div>
+        <div class="rows">
+            <div class="fx">
+                <div class="name">Dólar<span>USD · BRL</span></div>
+                <div class="val" id="dolar">—</div>
+            </div>
+            <div class="fx">
+                <div class="name">Euro<span>EUR · BRL</span></div>
+                <div class="val" id="euro">—</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TERMÔMETRO DO DIA (destaque do maior movimento) -->
+    <section class="plot pulse">
+        <div class="stamp">T·02</div>
+        <div class="label">Pulso do dia</div>
+        <div class="big" id="pulse-val">—</div>
+        <div class="sub" id="pulse-sub">maior oscilação nas commodities</div>
+        <div class="mover" id="pulse-mover">aguardando pregão…</div>
+    </section>
+
+    <!-- CLIMA + VÍDEO -->
+    <section class="plot sky">
+        <div class="stamp" style="color:var(--cream)">T·03</div>
+        <div class="weather">
+            <div class="place">Ribeirão Preto · SP</div>
+            <div class="temp" id="temp">—°</div>
+            <div class="ico" id="ico">🌤️</div>
+        </div>
+        <div class="screen">
+            <iframe id="video"
+                src="https://www.youtube.com/embed/4cW5KJfW9mE?autoplay=1&mute=1&loop=1&playlist=4cW5KJfW9mE&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&cc_load_policy=0"
+                allow="autoplay; encrypted-media"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+    </section>
+
+    <!-- COMMODITIES -->
+    <section class="plot harvest">
+        <div class="stamp">T·04 — Cotações CEPEA / B3</div>
+        <div class="label">A Colheita</div>
+        <div class="crops" id="crops">
+            <!-- preenchido via JS: soja, milho, café, boi -->
+        </div>
+    </section>
+
+</main>
+
+<!-- SULCOS (esteiras) -->
+<footer class="furrows">
+    <div class="furrow f-agro">
+        <div class="seal"><span class="dot"></span>Giro do Agro</div>
+        <div class="flow" id="ticker-noticias">buscando notícias…</div>
+    </div>
+    <div class="furrow f-market">
+        <div class="seal"><span class="dot"></span>Mercados</div>
+        <div class="flow" id="ticker-finance">carregando pregão…</div>
+    </div>
+    <div class="furrow f-events">
+        <div class="seal"><span class="dot"></span>Agenda Harven</div>
+        <div class="flow" id="ticker-agenda">sincronizando…</div>
+    </div>
+</footer>
+
+<script>
+/* ====== WAKE LOCK ====== */
+let wakeLock=null;
+async function manterTelaLigada(){
+  try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{}); } }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{if(wakeLock===null&&document.visibilityState==='visible')manterTelaLigada();});
+manterTelaLigada();
+
+/* ====== RELÓGIO + ESTAÇÃO ====== */
+function estacaoDoAno(m){ // hemisfério sul
+    if(m>=2&&m<=4)return'outono no campo';
+    if(m>=5&&m<=7)return'inverno seco';
+    if(m>=8&&m<=10)return'primavera · plantio';
+    return'verão · safra cheia';
+}
+function atualizarRelogio(){
+    const a=new Date();
+    document.getElementById('relogio').innerText=
+        String(a.getHours()).padStart(2,'0')+':'+String(a.getMinutes()).padStart(2,'0');
+    document.getElementById('data').innerText=
+        a.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+    document.getElementById('season').innerText='— '+estacaoDoAno(a.getMonth())+' —';
+}
+setInterval(atualizarRelogio,1000);atualizarRelogio();
+
+/* ====== FULLSCREEN + wakelock no duplo-clique ====== */
+document.getElementById('brand').addEventListener('dblclick',()=>{
+    if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(()=>{});manterTelaLigada();}
+    else document.exitFullscreen();
+});
+
+/* ====== MOEDAS ====== */
+async function atualizarMoedas(){
+    try{
+        const r=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL');
+        const d=await r.json();
+        const f=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+        document.getElementById('dolar').innerText=f.format(parseFloat(d.USDBRL.bid));
+        document.getElementById('euro').innerText=f.format(parseFloat(d.EURBRL.bid));
+    }catch(e){console.error(e);}
+}
+
+/* ====== CLIMA (com ícone dinâmico) ====== */
+function iconeClima(code){
+    if(code===0)return'☀️';
+    if(code<=3)return'🌤️';
+    if(code<=48)return'🌫️';
+    if(code<=67)return'🌧️';
+    if(code<=77)return'🌨️';
+    if(code<=82)return'🌦️';
+    if(code<=99)return'⛈️';
+    return'🌤️';
+}
+async function atualizarClima(){
+    try{
+        const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true');
+        const d=await r.json();
+        document.getElementById('temp').innerText=Math.round(d.current_weather.temperature)+'°';
+        document.getElementById('ico').innerText=iconeClima(d.current_weather.weathercode);
+    }catch(e){console.error(e);}
+}
+
+/* ====== NOTÍCIAS ====== */
+async function atualizarNoticias(){
+    try{
+        const urlRSS='https://www.canalrural.com.br/feed/';
+        const api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(urlRSS);
+        const r=await fetch(api);const d=await r.json();
+        if(d.status==='ok'){
+            let t='';
+            d.items.slice(0,8).forEach(n=>{t+=n.title.toUpperCase()+' <span>◆</span> ';});
+            const el=document.getElementById('ticker-noticias');el.innerHTML=t;
+            setTimeout(()=>{el.style.animationDuration=(el.scrollWidth/60)+'s';},100);
         }
-        setInterval(atualizarRelogio, 1000);
-        atualizarRelogio();
+    }catch(e){console.error(e);}
+}
 
-        /* FULLSCREEN MÁGICO VIA TOUCH */
-        document.getElementById('logo-fullscreen').addEventListener('dblclick', function() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Erro ao tentar tela cheia: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
+/* ====== COMMODITIES (mantém endpoint TSV) ====== */
+const CROP_META={
+    soja:{nome:'Soja',moeda:'US$'}, milho:{nome:'Milho',moeda:'R$'},
+    cafe:{nome:'Café',moeda:'US$'}, boi:{nome:'Boi Gordo',moeda:'R$'}
+};
+const ORDER=['soja','milho','cafe','boi'];
+
+async function atualizarPlanilhaAgro(){
+    try{
+        const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=tsv&t='+Date.now();
+        const r=await fetch(url);const txt=await r.text();
+        const linhas=txt.split(/\r?\n/);
+        const dados={}; // nome -> {contrato, valor, var}
+        linhas.forEach((l,i)=>{
+            if(i===0)return;
+            const c=l.split('\t');
+            if(c.length>=4){
+                const nome=c[0].trim().toLowerCase();
+                const contrato=c[1].trim();
+                let v=parseFloat(c[2].replace(/[^\d,\.-]/g,'').replace(',','.'));
+                let ch=parseFloat(c[3].replace(/[^\d,\.-]/g,'').replace(',','.'));
+                if(isNaN(ch)||Math.abs(ch)>30)ch=0; // trava de sanidade
+                if(!isNaN(v)&&v>0)dados[nome]={contrato,valor:v,chg:ch};
             }
         });
 
-        /* MOEDAS */
-        async function atualizarMoedas() {
-            try {
-                const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL');
-                const dados = await res.json();
-                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-                document.getElementById('dolar').innerText = formatador.format(parseFloat(dados.USDBRL.bid));
-                document.getElementById('euro').innerText = formatador.format(parseFloat(dados.EURBRL.bid));
-            } catch(e) { console.error(e); }
-        }
-
-        /* CLIMA */
-        async function atualizarClima() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.1775&longitude=-47.8103&current_weather=true');
-                const dados = await res.json();
-                document.getElementById('temp').innerText = Math.round(dados.current_weather.temperature) + '°C';
-            } catch(e) { console.error(e); }
-        }
-
-        /* NOTÍCIAS */
-        async function atualizarNoticias() {
-            try {
-                const urlRSS = 'https://www.canalrural.com.br/feed/';
-                const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlRSS)}`;
-                const res = await fetch(api);
-                const dados = await res.json();
-                if(dados.status === 'ok') {
-                    let textoFinal = '';
-                    dados.items.slice(0, 8).forEach(noticia => {
-                        textoFinal += `${noticia.title.toUpperCase()} <span>|</span> `;
-                    });
-                    
-                    const tickerDiv = document.getElementById('ticker-noticias');
-                    tickerDiv.innerHTML = textoFinal;
-
-                    // Dinâmica de Velocidade (60 px/s)
-                    setTimeout(() => {
-                        const largura = tickerDiv.scrollWidth;
-                        tickerDiv.style.animationDuration = (largura / 60) + 's';
-                    }, 100);
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        /* COMMODITIES (BLINDADO COM TSV) */
-        async function atualizarPlanilhaAgro() {
-            try {
-                // 1. Mudamos o final da URL de output=csv para output=tsv
-                const urlTSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1361564800&single=true&output=tsv&t=' + new Date().getTime();
-                const res = await fetch(urlTSV);
-                const textoTSV = await res.text();
-                const linhas = textoTSV.split(/\r?\n/);
-
-                linhas.forEach((linha, index) => {
-                    if(index === 0) return;
-                    
-                    // 2. Mudamos o delimitador para ler o TAB ('\t') invés de vírgula
-                    const colunas = linha.split('\t');
-                    
-                    if(colunas.length >= 4) {
-                        const nome = colunas[0].trim().toLowerCase();
-                        const contrato = colunas[1].trim();
-                        let valorStr = colunas[2].replace(/[^\d,\.-]/g, '').replace(',', '.');
-                        let variacaoStr = colunas[3].replace(/[^\d,\.-]/g, '').replace(',', '.');
-                        let valor = parseFloat(valorStr);
-                        let variacao = parseFloat(variacaoStr);
-
-                        if(!isNaN(valor) && valor > 0) {
-                            const card = document.getElementById(nome);
-                            if(card) {
-                                const valorFormatado = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                let seta = '•';
-                                if(variacao > 0) seta = '▲';
-                                if(variacao < 0) seta = '▼';
-                                let cor = '#f5f5f0';
-                                if(variacao > 0) cor = '#00ff88';
-                                if(variacao < 0) cor = '#ff5c5c';
-                                
-                                let simboloMoeda = "R$";
-                                if (nome === "soja" || nome === "cafe") simboloMoeda = "US$";
-                                
-                                card.innerHTML = `
-                                    <div style="font-size:12px; opacity:0.7; margin-bottom:4px;">${contrato}</div>
-                                    <div>${simboloMoeda} ${valorFormatado}</div>
-                                    <div style="font-size:14px; margin-top:8px; color:${cor}; font-weight:700;">${seta} ${variacao.toFixed(2)}%</div>
-                                `;
-                            }
-                        }
-                    }
-                });
-                document.getElementById('ultima-atualizacao').innerText = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
-            } catch(erro) { console.error("Erro na planilha:", erro); }
-        }
-
-        /* MERCADO FINANCEIRO (BLINDADO COM TSV) */
-        async function atualizarMercadoFinanceiro() {
-            try {
-                // Trocado de output=csv para output=tsv
-                const urlTSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=tsv&t=' + new Date().getTime();
-                const res = await fetch(urlTSV);
-                const textoTSV = await res.text();
-                const linhas = textoTSV.split(/\r?\n/);
-                let textoTicker = '';
-
-                linhas.forEach((linha, index) => {
-                    if(index === 0) return;
-                    
-                    // Agora dividimos as colunas usando TAB (\t) em vez de vírgulas
-                    const colunas = linha.split('\t');
-                    
-                    if(colunas.length >= 2) {
-                        const nome = colunas[0].trim().toUpperCase();
-                        let valorStr = colunas[1] ? colunas[1].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
-                        let variacaoStr = colunas[2] ? colunas[2].replace(/[^\d,\.-]/g, '').replace(',', '.') : '0';
-                        let valor = parseFloat(valorStr);
-                        let variacao = parseFloat(variacaoStr);
-                        if(isNaN(variacao)) variacao = 0;
-
-                        if(!isNaN(valor) && valor > 0) {
-                            if (nome === 'IBOV') {
-                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🇧🇷 B3 / BRASIL</span>`;
-                            } else if (nome === 'S&P500') {
-                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🇺🇸 NYSE / GLOBAL</span>`;
-                            } else if (nome === 'BTC/BRL') {
-                                textoTicker += `<span style="background: var(--gold); color: #000; padding: 4px 12px; border-radius: 4px; font-weight: 800; margin-left: 50px; margin-right: 15px; font-size: 18px;">🪙 CRIPTO</span>`;
-                            }
-                            const valorFormatado = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                            let cor = '#f5f5f0';
-                            let seta = '•';
-                            if(variacao > 0) { cor = '#00ff88'; seta = '▲'; }
-                            if(variacao < 0) { cor = '#ff5c5c'; seta = '▼'; }
-
-                            textoTicker += `
-                                <span style="color: var(--off-white); margin-left: 15px; margin-right: 8px;">${nome}</span>
-                                <span style="color: ${cor}; font-weight: bold;">${valorFormatado} (${seta} ${variacao.toFixed(2)}%)</span>
-                            `;
-                        }
-                    }
-                });
-                
-                const tickerDiv = document.getElementById('ticker-finance');
-                if(tickerDiv) {
-                    tickerDiv.innerHTML = textoTicker;
-
-                    // Dinâmica de Velocidade
-                    setTimeout(() => {
-                        const largura = tickerDiv.scrollWidth;
-                        tickerDiv.style.animationDuration = (largura / 60) + 's';
-                    }, 100);
-                }
-
-            } catch(erro) { console.error("Erro no ticker financeiro:", erro); }
-        }
-        
-        /* AGENDA VIA JACAD/GOOGLE SHEETS */
-        async function atualizarAgenda() {
-            try {
-                const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t=' + new Date().getTime(); 
-                
-                const res = await fetch(urlCSV);
-                if (!res.ok) throw new Error("Erro ao acessar a planilha de eventos");
-                
-                const textoCSV = await res.text();
-                const linhas = textoCSV.split(/\r?\n/);
-                let textoTicker = '';
-                let temEvento = false;
-
-                for (let i = 1; i < linhas.length; i++) {
-                    if (linhas[i].trim() === '') continue;
-                    
-                    const delimitador = linhas[i].includes(';') ? ';' : ',';
-                    const colunas = linhas[i].split(delimitador);
-                    
-                    if (colunas.length >= 2) {
-                        const dataEvento = colunas[0].trim();
-                        let detalhes = colunas[1].trim();
-
-                        if (dataEvento && detalhes) {
-                            textoTicker += `
-                                <span style="color: var(--neon); font-weight: 800; margin-left: 60px; font-size: 22px;">🗓️ ${dataEvento}</span>
-                                <span style="color: var(--off-white); font-weight: 600; margin-left: 15px; font-size: 20px;">${detalhes}</span>
-                                <span style="color: var(--gold); font-weight: 800; margin-left: 20px;"> • </span>
-                            `;
-                            temEvento = true;
-                        }
-                    }
-                }
-                
-                if(!temEvento) textoTicker = '<span style="margin-left: 60px; color: var(--off-white);">Nenhum evento programado no momento.</span>';
-                
-                const tickerDiv = document.getElementById('ticker-agenda');
-                tickerDiv.innerHTML = textoTicker;
-
-                // Dinâmica de Velocidade (60 px/s)
-                setTimeout(() => {
-                    const largura = tickerDiv.scrollWidth;
-                    tickerDiv.style.animationDuration = (largura / 60) + 's';
-                }, 100);
-
-            } catch(erro) {
-                console.error("Erro nos eventos:", erro);
-                document.getElementById('ticker-agenda').innerHTML = '<span style="margin-left: 60px; color: var(--neon);">Sincronizando eventos...</span>';
+        // monta os 4 talhões com futuro + físico
+        const wrap=document.getElementById('crops');
+        let html='';
+        let maiorMov={nome:'',abs:0,chg:0};
+        ORDER.forEach(key=>{
+            const fut=dados[key], fis=dados[key+'_fisico'];
+            if(!fut)return;
+            const meta=CROP_META[key];
+            const fmt=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+            const setaCls=fut.chg>0?'up':(fut.chg<0?'down':'flat');
+            const seta=fut.chg>0?'▲':(fut.chg<0?'▼':'◆');
+            if(Math.abs(fut.chg)>maiorMov.abs){maiorMov={nome:meta.nome,abs:Math.abs(fut.chg),chg:fut.chg};}
+            html+=`<div class="crop">
+                <div class="cname">${meta.nome}<span class="contract">${fut.contrato}</span></div>
+                <div class="tier future">
+                    <div class="t-label">Futuro · B3</div>
+                    <div class="t-val">${meta.moeda} ${fmt(fut.valor)}</div>
+                    <div class="chg ${setaCls}">${seta} ${fut.chg.toFixed(2)}%</div>
+                </div>`;
+            if(fis){
+                const fCls=fis.chg>0?'up':(fis.chg<0?'down':'flat');
+                const fSeta=fis.chg>0?'▲':(fis.chg<0?'▼':'◆');
+                html+=`<div class="tier physical">
+                    <div class="t-label">Físico · CEPEA</div>
+                    <div class="t-val">R$ ${fmt(fis.valor)} <span class="chg ${fCls}" style="font-size:10px">${fSeta}${fis.chg.toFixed(2)}%</span></div>
+                </div>`;
             }
-        } 
+            html+=`</div>`;
+        });
+        wrap.innerHTML=html;
 
-        /* START */
-        atualizarMoedas();
-        atualizarClima();
-        atualizarNoticias();
-        atualizarPlanilhaAgro();
-        atualizarMercadoFinanceiro();
-        atualizarAgenda();
+        // Pulso do dia
+        if(maiorMov.nome){
+            const pv=document.getElementById('pulse-val');
+            const pm=document.getElementById('pulse-mover');
+            const sign=maiorMov.chg>0?'+':'';
+            pv.innerHTML=`${sign}${maiorMov.chg.toFixed(2)}<span class="unit">%</span>`;
+            pv.style.color=maiorMov.chg>0?'var(--leaf)':(maiorMov.chg<0?'var(--clay)':'var(--cream)');
+            pm.innerHTML=`puxado por <b>${maiorMov.nome}</b>`;
+        }
 
-        /* INTERVALOS */
-        setInterval(atualizarMoedas, 300000);
-        setInterval(atualizarClima, 1800000);
-        setInterval(atualizarPlanilhaAgro, 600000);
-        setInterval(atualizarNoticias, 1800000);
-        setInterval(atualizarMercadoFinanceiro, 300000);
-        setInterval(atualizarAgenda, 300000);
-    </script>
+        document.getElementById('ultima-atualizacao').innerText='sincronizado · '+new Date().toLocaleTimeString('pt-BR');
+    }catch(e){console.error('agro',e);}
+}
+
+/* ====== MERCADO FINANCEIRO ====== */
+async function atualizarMercadoFinanceiro(){
+    try{
+        const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1630573121&single=true&output=tsv&t='+Date.now();
+        const r=await fetch(url);const txt=await r.text();
+        const linhas=txt.split(/\r?\n/);let t='';
+        linhas.forEach((l,i)=>{
+            if(i===0)return;const c=l.split('\t');
+            if(c.length>=2){
+                const nome=c[0].trim().toUpperCase();
+                let v=parseFloat((c[1]||'0').replace(/[^\d,\.-]/g,'').replace(',','.'));
+                let ch=parseFloat((c[2]||'0').replace(/[^\d,\.-]/g,'').replace(',','.'));
+                if(isNaN(ch))ch=0;
+                if(!isNaN(v)&&v>0){
+                    if(nome==='IBOV')t+='<span style="color:var(--wheat);font-weight:700">◈ B3 BRASIL</span>';
+                    else if(nome==='S&P500')t+='<span style="color:var(--wheat);font-weight:700">◈ NYSE GLOBAL</span>';
+                    else if(nome==='BTC/BRL')t+='<span style="color:var(--wheat);font-weight:700">◈ CRIPTO</span>';
+                    const vf=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+                    const col=ch>0?'var(--leaf)':(ch<0?'var(--clay)':'var(--cream-dim)');
+                    const s=ch>0?'▲':(ch<0?'▼':'◆');
+                    t+=` ${nome} <b style="color:${col}">${vf} (${s}${ch.toFixed(2)}%)</b> &nbsp;·&nbsp; `;
+                }
+            }
+        });
+        const el=document.getElementById('ticker-finance');el.innerHTML=t;
+        setTimeout(()=>{el.style.animationDuration=(el.scrollWidth/60)+'s';},100);
+    }catch(e){console.error('fin',e);}
+}
+
+/* ====== AGENDA ====== */
+async function atualizarAgenda(){
+    try{
+        const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vRkAqeSDwgZNveZjBKREQlBpNcAqeQA2pjKAGh7_AWtV8ylV-CFprSHNSNnS-rKoyuIVFT5DlIBh2y0/pub?gid=1456726705&single=true&output=csv&t='+Date.now();
+        const r=await fetch(url);if(!r.ok)throw new Error('agenda');
+        const txt=await r.text();const linhas=txt.split(/\r?\n/);
+        let t='';let tem=false;
+        for(let i=1;i<linhas.length;i++){
+            if(linhas[i].trim()==='')continue;
+            const del=linhas[i].includes(';')?';':',';
+            const c=linhas[i].split(del);
+            if(c.length>=2){
+                const dt=c[0].trim();const det=c[1].trim();
+                if(dt&&det){t+=`<span style="color:var(--wheat)">🗓 ${dt}</span> ${det} &nbsp;◆&nbsp; `;tem=true;}
+            }
+        }
+        if(!tem)t='<span>Nenhum evento programado no momento.</span>';
+        const el=document.getElementById('ticker-agenda');el.innerHTML=t;
+        setTimeout(()=>{el.style.animationDuration=(el.scrollWidth/60)+'s';},100);
+    }catch(e){
+        document.getElementById('ticker-agenda').innerHTML='<span>Sincronizando eventos…</span>';
+    }
+}
+
+/* ====== START ====== */
+atualizarMoedas();atualizarClima();atualizarNoticias();
+atualizarPlanilhaAgro();atualizarMercadoFinanceiro();atualizarAgenda();
+setInterval(atualizarMoedas,300000);
+setInterval(atualizarClima,1800000);
+setInterval(atualizarPlanilhaAgro,600000);
+setInterval(atualizarNoticias,1800000);
+setInterval(atualizarMercadoFinanceiro,300000);
+setInterval(atualizarAgenda,300000);
+</script>
 </body>
 </html>
